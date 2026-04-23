@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antrenör Yönetimi</title>
+    <style>
+        /* --- MODERN LIGHT TEMA (AYDINLIK) --- */
+        :root {
+            --arkaplan: #f8fafc;
+            --kart-bg: #ffffff;
+            --kenarlik: #e2e8f0;
+            --mavi: #0284c7; 
+            --bordo: #9f1239; 
+            --metin-ana: #0f172a;
+            --metin-alt: #64748b;
+            --koyu-gri: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arkaplan);
+            color: var(--metin-ana);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SOL ALAN (KAYIT YAZICI) --- */
+        .sol-menu {
+            width: 420px;
+            background-color: var(--kart-bg);
+            border-right: 1px solid var(--kenarlik);
+            display: flex; flex-direction: column; padding: 25px; box-sizing: border-box;
+            z-index: 10; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            border-right-color: var(--koyu-gri);
+        }
+
+        .baslik { margin: 0 0 20px 0; font-size: 22px; color: var(--koyu-gri); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;}
+        
+        .form-grup { margin-bottom: 15px; }
+        .form-grup label.baslik-label { display: block; margin-bottom: 5px; color: var(--metin-alt); font-size: 13px; font-weight: bold;}
+        .form-grup input[type="text"], .form-grup select, .form-grup textarea {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--kenarlik);
+            background-color: #f1f5f9; color: var(--metin-ana); box-sizing: border-box; outline: none; font-size: 15px;
+            transition: border-color 0.2s; font-family: inherit;
+        }
+        .form-grup textarea { resize: vertical; min-height: 100px; }
+        .form-grup input:focus, .form-grup select:focus, .form-grup textarea:focus { border-color: var(--mavi); background-color: #fff;}
+
+        .btn-birincil {
+            background-color: var(--koyu-gri); color: white; border: none; padding: 12px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: auto; transition: 0.2s;
+        }
+        .btn-birincil:hover { background-color: #1e293b; }
+        
+        .btn-ikincil {
+            background-color: #f1f5f9; color: var(--mavi); border: 1px solid var(--mavi); padding: 10px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; transition: 0.2s; margin-top: 10px;
+        }
+        .btn-ikincil:hover { background-color: var(--mavi); color: white; }
+
+        /* --- SAĞ ALAN (KARTLARIN LİSTELENDİĞİ YER) --- */
+        .sag-alan { flex: 1; display: flex; flex-direction: column; padding: 30px; background-color: var(--arkaplan); overflow-y: auto; }
+        .sag-baslik { margin: 0 0 25px 0; color: var(--metin-ana); font-size: 24px;}
+        .program-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+        /* --- ANTRENÖR KARTLARI --- */
+        .antrenor-kart {
+            background-color: var(--kart-bg); border-radius: 8px; border: 1px solid var(--kenarlik);
+            padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 4px solid var(--koyu-gri);
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 15px;
+        }
+        .antrenor-kart:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .ak-avatar {
+            width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 24px; color: var(--mavi); font-weight: bold;
+        }
+        .ak-bilgi { flex: 1; }
+        .ak-isim { font-size: 18px; font-weight: bold; color: var(--metin-ana); margin-bottom: 4px;}
+        .ak-brans { font-size: 13px; color: var(--metin-alt); background-color: #f1f5f9; padding: 4px 8px; border-radius: 12px; display: inline-block;}
+        
+        /* --- MODAL (AÇILIR PENCERE) TASARIMI --- */
+        .modal-arkaplan {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.6); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-arkaplan.aktif { opacity: 1; pointer-events: auto; }
+        .modal-icerik {
+            background-color: var(--kart-bg); border-radius: 12px; width: 450px; max-width: 90%;
+            padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-20px); transition: transform 0.3s ease; position: relative;
+        }
+        .modal-arkaplan.aktif .modal-icerik { transform: translateY(0); }
+        .modal-kapat {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            font-size: 20px; color: var(--metin-alt); cursor: pointer; transition: 0.2s;
+        }
+        .modal-kapat:hover { color: var(--bordo); }
+        .m-isim { font-size: 24px; font-weight: bold; color: var(--metin-ana); margin-bottom: 5px; margin-top: 0;}
+        .m-brans { color: var(--mavi); font-weight: bold; font-size: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--kenarlik); padding-bottom: 15px;}
+        .m-satir { margin-bottom: 15px; }
+        .m-etiket { font-size: 12px; color: var(--metin-alt); text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px;}
+        .m-deger { font-size: 15px; color: var(--metin-ana); line-height: 1.5; white-space: pre-wrap; background-color: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--kenarlik);}
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sol-menu { width: 100%; border-right: none; border-bottom: 2px solid var(--kenarlik); overflow-y: visible; }
+            .sag-alan { padding: 15px; overflow-y: visible; }
+            .program-grid { grid-template-columns: 1fr; }
+            .modal-icerik { width: 90%; padding: 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sol-menu">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">
+            <h2 class="baslik" style="margin: 0; border: none; padding: 0;">Antrenör Ekle</h2>
+            <a href="index.html" style="text-decoration: none; color: var(--mavi); font-weight: bold; font-size: 14px; background-color: #f0f9ff; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--mavi);">🏠 Menü</a>
+        </div>
+        
+        <div class="form-grup">
+            <label class="baslik-label">Ad Soyad</label>
+            <input type="text" id="antAd" placeholder="Örn: Ahmet Hoca">
+        </div>
+
+        <div class="form-grup">
+            <label class="baslik-label">Telefon Numarası</label>
+            <input type="text" id="antTel" placeholder="Örn: 0555 123 45 67">
+        </div>
+
+        <div class="form-grup">
+            <label class="baslik-label">Favori Branş / Uzmanlık</label>
+            <select id="antBrans">
+                <option value="Serbest Stili">Serbest Stili</option>
+                <option value="Sırtüstü Uzmanı">Sırtüstü Uzmanı</option>
+                <option value="Kurbağalama">Kurbağalama</option>
+                <option value="Kelebek Stili">Kelebek Stili</option>
+                <option value="Altyapı & Temel Eğitim">Altyapı & Temel Eğitim</option>
+                <option value="Kara Antrenmanı (Kondisyon)">Kara Antrenmanı (Kondisyon)</option>
+            </select>
+        </div>
+
+        <div class="form-grup">
+            <label class="baslik-label">Özgeçmiş / Notlar</label>
+            <textarea id="antOzgecmis" placeholder="Hocanın başarıları, mezun olduğu okul veya sporculara yaklaşımı hakkında notlar..."></textarea>
+        </div>
+
+        <button class="btn-birincil" onclick="antrenorKaydet()">💾 Antrenörü Kaydet</button>
+    </div>
+
+    <div class="sag-alan">
+        <h1 class="sag-baslik">Kulüp Antrenörleri</h1>
+        <div class="program-grid" id="antrenorGrid">
+            </div>
+    </div>
+
+    <div class="modal-arkaplan" id="antrenorModal">
+        <div class="modal-icerik">
+            <button class="modal-kapat" onclick="modalKapat()">✖</button>
+            <h2 class="m-isim" id="modalAd">Ahmet Hoca</h2>
+            <div class="m-brans" id="modalBrans">Serbest Stili</div>
+            
+            <div class="m-satir">
+                <span class="m-etiket">📞 Telefon Numarası</span>
+                <div class="m-deger" id="modalTel">0555 123 45 67</div>
+            </div>
+            
+            <div class="m-satir">
+                <span class="m-etiket">📋 Özgeçmiş / Notlar</span>
+                <div class="m-deger" id="modalOzgecmis">Buraya hocanın detaylı özgeçmişi gelecek.</div>
+            </div>
+
+            <button class="btn-ikincil" style="color: var(--bordo); border-color: var(--bordo); margin-top: 15px;" onclick="seciliAntrenoruSil()">🗑️ Bu Antrenörü Sil</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        // --- ANTRENÖR MODÜLÜ JS ---
+        let antrenorler = [];
+        let aktifSeciliAntrenorId = null;
+
+        async function antrenorleriYukle() {
+            try {
+                const res = await fetch(`${API_BASE}/antrenorler`);
+                const data = await res.json();
+                antrenorler = data.antrenorler || [];
+                antrenorGridGuncelle();
+            } catch(e) {
+                document.getElementById("antrenorGrid").innerHTML = '<div style="color: var(--bordo);">Bağlantı hatası! Sunucu çalışıyor mu?</div>';
+            }
+        }
+
+        async function antrenorKaydet() {
+            const ad = document.getElementById("antAd").value.trim();
+            const tel = document.getElementById("antTel").value.trim();
+            const brans = document.getElementById("antBrans").value;
+            const ozgecmis = document.getElementById("antOzgecmis").value.trim();
+
+            if (ad === "") return alert("Lütfen antrenörün adını giriniz.");
+
+            const payload = {
+                ad_soyad: ad,
+                telefon: tel || "Belirtilmedi",
+                brans: brans,
+                ozgecmis: ozgecmis || "Özgeçmiş veya not eklenmedi."
+            };
+
+            const btn = document.querySelector(".btn-birincil");
+            btn.disabled = true; btn.innerText = "⏳ Kaydediliyor...";
+            try {
+                const res = await fetch(`${API_BASE}/antrenor/kaydet`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    document.getElementById("antAd").value = "";
+                    document.getElementById("antTel").value = "";
+                    document.getElementById("antOzgecmis").value = "";
+                    antrenorleriYukle();
+                } else { alert("Hata oluştu."); }
+            } catch(e) { alert("API bağlantı hatası!"); }
+            btn.disabled = false; btn.innerText = "💾 Antrenörü Kaydet";
+        }
+
+        function antrenorGridGuncelle() {
+            const grid = document.getElementById("antrenorGrid");
+            grid.innerHTML = "";
+            
+            if (antrenorler.length === 0) { 
+                grid.innerHTML = '<div style="color: var(--metin-alt);">Henüz antrenör kaydı oluşturulmadı. Sol taraftan kayıt ekleyebilirsiniz.</div>'; 
+                return; 
+            }
+
+            [...antrenorler].reverse().forEach(hoca => {
+                const kart = document.createElement("div"); 
+                kart.className = "antrenor-kart";
+                kart.onclick = () => antrenorDetayGoster(hoca.ID);
+                
+                const basHarf = hoca.AdSoyad ? hoca.AdSoyad.charAt(0).toUpperCase() : "?";
+
+                kart.innerHTML = `
+                    <div class="ak-avatar">${basHarf}</div>
+                    <div class="ak-bilgi">
+                        <div class="ak-isim">${hoca.AdSoyad}</div>
+                        <div class="ak-brans">${hoca.Brans}</div>
+                    </div>
+                `;
+                grid.appendChild(kart);
+            });
+        }
+
+        function antrenorDetayGoster(id) {
+            const hoca = antrenorler.find(a => a.ID === id);
+            if(!hoca) return;
+
+            aktifSeciliAntrenorId = id;
+
+            document.getElementById("modalAd").innerText = hoca.AdSoyad;
+            document.getElementById("modalBrans").innerText = hoca.Brans;
+            document.getElementById("modalTel").innerText = hoca.Telefon;
+            document.getElementById("modalOzgecmis").innerText = hoca.Ozgecmis;
+
+            document.getElementById("antrenorModal").classList.add("aktif");
+        }
+
+        async function seciliAntrenoruSil() {
+            if(confirm("Bu antrenörü listeden silmek istediğinize emin misiniz?")) {
+                try {
+                    const res = await fetch(`${API_BASE}/antrenor/sil`, {
+                        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: aktifSeciliAntrenorId})
+                    });
+                    if(res.ok) {
+                        modalKapat();
+                        antrenorleriYukle();
+                    } else { alert("Silinemedi."); }
+                } catch(e) { alert("Bağlantı hatası!"); }
+            }
+        }
+
+        function modalKapat() {
+            document.getElementById("antrenorModal").classList.remove("aktif");
+            aktifSeciliAntrenorId = null;
+        }
+
+        // Modal dışına (siyah alana) tıklanınca kapatma
+        document.getElementById("antrenorModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                modalKapat();
+            }
+        });
+
+        window.onload = antrenorleriYukle;
+    </script>
+</body>
+</html>
