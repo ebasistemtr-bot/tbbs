@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabzon Yüzme | Sporcu Yönetimi CRM</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- BEYAZ / AYDINLIK TEMA --- */
+        :root {
+            --arkaplan: #f0f2f5; --kart-bg: #ffffff; --bordo: #9f1239; 
+            --mavi: #0284c7; --metin-ana: #1e293b; --metin-alt: #64748b; 
+            --kenarlik: #e2e8f0; --tehlike: #ef4444; --basari: #10b981; --uyari: #f59e0b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--arkaplan); color: var(--metin-ana); margin: 0; display: flex; height: 100vh; overflow: hidden; box-sizing: border-box; overflow-x: hidden;}
+        
+        /* SOL MENÜ */
+        .sol-menu { width: 320px; background-color: var(--kart-bg); border-right: 1px solid var(--kenarlik); display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; z-index: 10; box-shadow: 2px 0 5px rgba(0,0,0,0.05);}
+        .baslik-alan { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .baslik-alan h2 { margin: 0; font-size: 20px; color: var(--bordo); }
+        .btn-ana { text-decoration: none; color: var(--mavi); font-size: 13px; font-weight: bold; background-color: #f0f9ff; border: 1px solid var(--mavi); padding: 8px 15px; border-radius: 8px; transition: 0.2s;}
+        .btn-ana:hover { background-color: var(--mavi); color: white; }
+        .arama-kutusu { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--kenarlik); background-color: #fff; color: var(--metin-ana); margin-bottom: 15px; outline: none; }
+        .btn-ekle { background-color: var(--bordo); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; transition: 0.3s; }
+        .btn-ekle:hover { filter: brightness(1.2); }
+        .sporcu-listesi { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;}
+        .sporcu-listesi::-webkit-scrollbar { width: 6px; }
+        .sporcu-listesi::-webkit-scrollbar-thumb { background-color: var(--kenarlik); border-radius: 10px; }
+        .sporcu-kart-sol { padding: 12px; background-color: var(--arkaplan); border-radius: 8px; cursor: pointer; border: 1px solid var(--kenarlik); display: flex; flex-direction: column; transition: 0.2s;}
+        .sporcu-kart-sol:hover, .sporcu-kart-sol.aktif { border-color: var(--mavi); background-color: #f0f9ff; }
+        .s-isim { font-size: 15px; font-weight: bold; margin-bottom: 4px;}
+        .s-detay { display: flex; justify-content: space-between; font-size: 12px; color: var(--metin-alt); }
+
+        /* SAĞ ALAN */
+        .sag-alan { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .tepe-buton { background: none; border: 1px solid var(--kenarlik); color: var(--metin-ana); padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold; background-color: var(--kart-bg);}
+        .tepe-buton:hover { border-color: var(--mavi); color: var(--mavi); }
+        .yas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; width: 100%; box-sizing: border-box; }
+        .yas-pano { background-color: var(--kart-bg); padding: 20px 10px; border-radius: 15px; text-align: center; cursor: pointer; border-top: 4px solid var(--bordo); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid var(--kenarlik); aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box; overflow: hidden;}
+        .yas-pano:hover { transform: translateY(-5px); border-color: var(--mavi); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .yas-pano h2 { margin: 0 0 5px 0; font-size: 22px; color: var(--metin-ana); }
+        .yas-pano p { margin: 0; color: var(--metin-alt); font-size: 13px; }
+        .sporcu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box;}
+        .kart-detay { background-color: var(--kart-bg); padding: 20px; border-radius: 12px; cursor: pointer; border: 1px solid var(--kenarlik); text-align: center; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .kart-detay:hover { border-color: var(--mavi); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .kart-detay .isim { font-size: 18px; font-weight: bold; color: var(--bordo); margin-bottom: 5px; }
+        .kart-detay .bilgi { font-size: 13px; color: var(--metin-alt); }
+
+        /* PROFİL HEADER VE BUTONLAR */
+        .profil-header { display: flex; justify-content: space-between; align-items: flex-start; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid var(--bordo); box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .profil-isim h1 { margin: 0 0 5px 0; color: var(--metin-ana); }
+        .profil-isim p { margin: 0; color: var(--metin-alt); font-size: 15px; }
+        .header-buton-grubu { display: flex; gap: 10px; }
+        .btn-header { padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s;}
+        .btn-devam { background-color: #f1f5f9; color: var(--metin-ana); border: 1px solid var(--kenarlik); }
+        .btn-devam:hover { background-color: #e2e8f0; }
+        .btn-duzen { background-color: var(--mavi); color: white; }
+        .btn-duzen:hover { filter: brightness(1.1); }
+        .btn-antrenman { background-color: #f1f5f9; color: var(--metin-ana); border: 1px solid var(--kenarlik); }
+        .btn-antrenman:hover { background-color: #e2e8f0; }
+
+        /* CRM KARTI */
+        .crm-kutu { background-color: var(--kart-bg); border: 1px solid var(--kenarlik); padding: 20px; border-radius: 15px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .crm-item label { color: var(--metin-alt); font-size: 12px; display: block; margin-bottom: 3px; text-transform: uppercase;}
+        .crm-item span { color: var(--metin-ana); font-size: 14px; font-weight: bold; }
+
+        /* FİLTRELEME (2 SATIRLI) */
+        .filtre-kutusu { background-color: var(--kart-bg); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--kenarlik); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .filtre-satir { display: flex; gap: 15px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+        .filtre-satir:last-child { margin-bottom: 0; }
+        .filtre-baslik { color: var(--metin-alt); font-size: 12px; text-transform: uppercase; font-weight: bold; width: 60px; }
+        .brans-btn { background-color: var(--arkaplan); border: 1px solid var(--kenarlik); color: var(--metin-alt); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .brans-btn:hover { border-color: var(--mavi); color: var(--mavi); }
+        .brans-btn.aktif { background-color: var(--mavi); color: white; border-color: var(--mavi); }
+
+        /* İÇERİK (GRAFİK VE LİSTE) */
+        .profil-icerik { display: flex; gap: 25px; flex-wrap: wrap; align-items: flex-start;}
+        .grafik-kutu { flex: 2; min-width: 400px; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--kenarlik);}
+        .liste-kutu { flex: 1; min-width: 320px; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; max-height: 500px; overflow-y: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--kenarlik);}
+        .derece-satir { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--kenarlik); }
+        .derece-satir:last-child { border: none; padding-bottom: 0;}
+        .ds-sol { display: flex; flex-direction: column; }
+        .ds-sol strong { color: var(--metin-ana); font-size: 15px; margin-bottom: 3px;}
+        .ds-sol span { color: var(--metin-alt); font-size: 12px; }
+        .ds-sag { font-weight: bold; color: var(--bordo); font-size: 16px; display: flex; align-items: center;}
+
+        /* MODALLAR (PENCERELER) */
+        .modal-arkaplan { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(3px);}
+        .modal-kutu { background-color: var(--arkaplan); width: 700px; max-width: 95%; max-height: 90vh; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-ust { background-color: var(--kart-bg); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); }
+        .modal-ust h3 { margin: 0; color: var(--bordo); }
+        .btn-kapat { background: none; border: none; color: var(--metin-alt); font-size: 24px; cursor: pointer; }
+        
+        .modal-sekmeler { display: flex; background-color: var(--kart-bg); border-bottom: 1px solid var(--kenarlik); padding: 15px; gap: 10px; flex-wrap: wrap;}
+        .sekme-btn { flex: 1; padding: 12px 15px; background-color: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 8px; color: var(--metin-alt); cursor: pointer; font-weight: bold; transition: all 0.2s ease; text-align: center;}
+        .sekme-btn:hover { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); }
+        .sekme-btn.aktif { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1); }
+        .modal-icerik { padding: 20px; overflow-y: auto;}
+        .modal-panel { display: none; }
+        .modal-panel.aktif { display: block; }
+        
+        .form-satir { display: flex; gap: 15px; margin-bottom: 15px;}
+        .form-grup { flex: 1; }
+        .form-grup label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--metin-alt); text-transform: uppercase; font-weight: bold;}
+        .form-grup input, .form-grup select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); background-color: #fff; color: var(--metin-ana); box-sizing: border-box; }
+        .btn-kaydet { background-color: var(--bordo); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size:15px;}
+        
+        .modal-derece-liste { display: flex; flex-direction: column; gap: 8px;}
+        .modal-derece-kutu { background-color: var(--kart-bg); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--kenarlik);}
+        .aksiyon-btn { background: none; border: none; cursor: pointer; font-weight: bold; padding: 5px 10px; border-radius: 5px;}
+        .btn-sil { color: var(--tehlike); }
+        .btn-sil:hover { background-color: rgba(239,68,68,0.1); }
+        .btn-duzen { color: var(--uyari); }
+        .btn-duzen:hover { background-color: rgba(245,158,11,0.1); }
+
+        .devam-liste-item { background-color: var(--kart-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--kenarlik); margin-bottom: 10px; font-size: 15px;}
+
+        /* MOBİL İÇİN ÖZEL ELEMANLAR */
+        .mobil-kapat-btn { display: none; width: 100%; background-color: #f1f5f9; color: var(--metin-ana); padding: 15px; border: 1px solid var(--kenarlik); border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; font-size: 16px; text-align: center; transition: 0.2s;}
+        .mobil-kapat-btn:hover { background-color: #e2e8f0; }
+        .mobil-tumu-kart { display: none; background-color: #f0f9ff; border-top: 4px solid var(--mavi); margin-bottom: 20px; text-align: center; cursor: pointer; padding: 20px; border-radius: 12px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .mobil-tumu-kart h2 { margin: 0 0 5px 0; color: var(--mavi); font-size: 20px;}
+        .mobil-tumu-kart p { margin: 0; color: var(--metin-alt); font-size: 13px;}
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; overflow-x: hidden; }
+            .sol-menu { display: none; }
+            .sol-menu.mobil-acik { display: flex !important; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; max-height: 100vh; z-index: 999; border-right: none; border-bottom: none; }
+            .mobil-kapat-btn { display: block; }
+            .mobil-tumu-kart { display: block; }
+            .sag-alan { padding: 15px; overflow-y: visible; }
+            .profil-icerik { flex-direction: column; }
+            .grafik-kutu, .liste-kutu { min-width: 100%; width: 100%; box-sizing: border-box; flex: none; }
+            .profil-header { flex-direction: column; gap: 15px; }
+            .header-buton-grubu { flex-wrap: wrap; width: 100%; }
+            .btn-header { flex: 1; text-align: center; }
+            .modal-kutu { width: 95%; max-height: 95vh; margin: 10px; }
+            .form-satir { flex-direction: column; gap: 10px; }
+            .crm-kutu { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .crm-kutu { grid-template-columns: 1fr; }
+            .modal-sekmeler { flex-direction: column; }
+            .sekme-btn { border-bottom: 1px solid var(--kenarlik); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sol-menu" id="solMenu">
+        <button class="mobil-kapat-btn" onclick="mobilMenuKapat()">⬅ Panoya Dön</button>
+        <div class="baslik-alan">
+            <h2>Kulüp Rehberi</h2>
+            <a href="index.html" class="btn-ana">🏠 Menü</a>
+        </div>
+        <input type="text" id="aramaKutusu" class="arama-kutusu" placeholder="Sporcu ara..." onkeyup="listeFiltrele()">
+        <button class="btn-ekle" onclick="yeniSporcuModali()">+ Yeni Kayıt / Profil</button>
+        <div class="sporcu-listesi" id="listeAlani"></div>
+    </div>
+
+    <div class="sag-alan">
+        <div id="gorunumDashboard" style="display: block;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); padding-bottom: 10px; margin-bottom: 15px;">
+                <h2 style="color: var(--metin-alt); margin: 0;">Takımlar & Gruplar</h2>
+                <a href="index.html" class="btn-ana">🏠 Menü</a>
+            </div>
+            <div class="mobil-tumu-kart" onclick="mobilMenuAc()">
+                <h2>🌍 Tüm Sporcular & Arama</h2>
+                <p>Sporcu Ara, Listeyi Gör veya Yeni Kayıt Ekle</p>
+            </div>
+            <div class="yas-grid" id="yasGridAlani"></div>
+        </div>
+
+        <div id="gorunumGrup" style="display: none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <button class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumDashboard')">⬅ Takımlara Dön</button>
+                <a href="index.html" class="btn-ana">🏠 Menü</a>
+            </div>
+            <h2 id="grupBaslik" style="color: var(--bordo); margin-top: 0;">Takım Sporcuları</h2>
+            <div class="sporcu-grid" id="grupSporcuGrid"></div>
+        </div>
+
+        <div id="gorunumProfil" style="display: none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <button class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumGrup')">⬅ Listeye Dön</button>
+                <a href="index.html" class="btn-ana">🏠 Menü</a>
+            </div>
+            <div class="profil-header">
+                <div class="profil-isim">
+                    <h1 id="profilIsim">Sporcu Adı</h1>
+                    <p id="profilDetay">Takım • Doğum Tarihi</p>
+                </div>
+                <div class="header-buton-grubu">
+                    <button class="btn-header btn-duzen" onclick="duzenleModaliAc()">✏️ Düzenle</button>
+                </div>
+            </div>
+
+            <div class="crm-kutu">
+                <div class="crm-item"><label>TC Kimlik No</label><span id="cv_tc">-</span></div>
+                <div class="crm-item"><label>Veli Ad Soyad</label><span id="cv_veli">-</span></div>
+                <div class="crm-item"><label>İletişim (Tel)</label><span id="cv_tel">-</span></div>
+                <div class="crm-item" id="crm_veli2_ad" style="display:none;"><label>2. Veli Ad Soyad</label><span id="cv_veli2_ad">-</span></div>
+                <div class="crm-item" id="crm_veli2_tel" style="display:none;"><label>2. İletişim (Tel)</label><span id="cv_veli2_tel">-</span></div>
+                <div class="crm-item"><label>Kan Grubu</label><span id="cv_kan">-</span></div>
+                <div class="crm-item"><label>Sağlık Durumu</label><span id="cv_saglik">-</span></div>
+                <div class="crm-item"><label>Cinsiyet</label><span id="cv_cinsiyet">-</span></div>
+            </div>
+
+            <div class="modal-sekmeler" style="margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--kenarlik); background-color: var(--kart-bg);">
+                <button class="sekme-btn aktif" id="btnSekmeYaris" onclick="profilSekmeDegistir('yaris')">🏁 Yarış Geçmişi</button>
+                <button class="sekme-btn" id="btnSekmeAntrenman" onclick="profilSekmeDegistir('antrenman')">🏋️ Antrenman Kayıtları</button>
+                <button class="sekme-btn" id="btnSekmeDevam" onclick="profilSekmeDegistir('devam')">📅 Devam Durumu</button>
+                <button class="sekme-btn" id="btnSekmeGyaris" onclick="profilSekmeDegistir('gyaris')">🎯 Gelecek Yarışlar</button>
+            </div>
+
+            <div id="profilYarisAlani">
+                <div class="filtre-kutusu" id="bransSekmeAlani">
+                    <div class="filtre-satir">
+                        <span class="filtre-baslik">Metraj:</span>
+                        <div id="mesafeButonlari" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+                    </div>
+                    <div class="filtre-satir">
+                        <span class="filtre-baslik">Stil:</span>
+                        <div id="stilButonlari" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+                    </div>
+                </div>
+
+                <div class="profil-icerik">
+                    <div class="grafik-kutu">
+                        <h3 id="grafikBaslik" style="margin-top: 0; color: var(--metin-alt);">Performans Gelişimi</h3>
+                        <div id="grafikUyari" style="display:none; color: var(--metin-alt); text-align: center; margin-top: 40px; font-style: italic;">
+                            Grafiği görmek için yukarıdan nokta atışı (Mesafe ve Stil) seçin.
+                        </div>
+                        <canvas id="profilGrafik"></canvas>
+                    </div>
+                    <div class="liste-kutu">
+                        <h3 id="listeBaslik" style="margin-top: 0; color: var(--metin-alt);">Tüm Yarışlar</h3>
+                        <div id="profilDereceler"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profilAntrenmanAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                <h3 style="margin-top: 0; color: var(--bordo);">Katıldığı Antrenmanlar</h3>
+                <div id="antrenmanListeAlani"></div>
+            </div>
+            
+            <div id="profilDevamAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                <h3 style="margin-top: 0; color: var(--mavi);">Devamsızlık Geçmişi</h3>
+                <div id="devamListesiAlan"></div>
+            </div>
+            
+            <div id="profilGyarisAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                <h3 style="margin-top: 0; color: var(--mavi);">Gelecek Yarış Programı</h3>
+                <div id="gyarisListeAlani"><p style='color:var(--metin-alt); padding:10px;'>Bu modül yapım aşamasındadır...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-arkaplan" id="ayarModal">
+        <div class="modal-kutu">
+            <div class="modal-ust">
+                <h3 id="modalBaslik">Ayarlar</h3>
+                <button class="btn-kapat" onclick="modalKapat('ayarModal')">✖</button>
+            </div>
+            <div class="modal-sekmeler">
+                <button class="sekme-btn aktif" onclick="modalSekme(0)">Profil Bilgileri</button>
+                <button class="sekme-btn" onclick="modalSekme(1)" id="sekmeDereceEkle">Derece Ekle</button>
+                <button class="sekme-btn" onclick="modalSekme(2)">Geçmişi Düzenle</button>
+            </div>
+            <div class="modal-icerik">
+                <div class="modal-panel aktif" id="mp-0">
+                    <div class="form-satir">
+                        <div class="form-grup" style="flex:2"><label>Ad Soyad</label><input type="text" id="editAd"></div>
+                        <div class="form-grup"><label>Cinsiyet</label><select id="editCinsiyet"><option>Erkek</option><option>Kadın</option></select></div>
+                    </div>
+                    <div class="form-satir">
+                        <div class="form-grup"><label>Doğum Tarihi</label><input type="text" id="editTarih" placeholder="Örn: 15.08.2013"></div>
+                        <div class="form-grup"><label>TC Kimlik No</label><input type="text" id="editTC" placeholder="11 haneli TC"></div>
+                    </div>
+                     <div class="form-satir">
+                        <div class="form-grup"><label>Takım / Grup</label><input type="text" id="editTakim" placeholder="Örn: A Takımı"></div>
+                        <div class="form-grup"><label>Kan Grubu</label><input type="text" id="editKan" placeholder="Örn: A Rh+"></div>
+                    </div>
+                    <div class="form-satir">
+                        <div class="form-grup"><label>Veli Ad Soyad</label><input type="text" id="editVeliAd"></div>
+                        <div class="form-grup">
+                            <label style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Veli Telefon</span>
+                                <button onclick="toggleVeli2(event)" id="btnVeli2Toggle" style="background:none; border:none; cursor:pointer; font-size:20px; color:var(--mavi); padding:0 5px;">⊕</button>
+                            </label>
+                            <input type="text" id="editVeliTel" placeholder="05XX...">
+                        </div>
+                    </div>
+                    <div class="form-satir" id="veli2Satir" style="display:none;">
+                        <div class="form-grup"><label>2. Veli Ad Soyad</label><input type="text" id="editVeli2Ad"></div>
+                        <div class="form-grup"><label>2. Veli Telefon</label><input type="text" id="editVeli2Tel" placeholder="05XX..."></div>
+                    </div>
+                    <div class="form-satir">
+                        <div class="form-grup"><label>Sağlık Durumu</label><input type="text" id="editSaglik" placeholder="Yok veya Astım vb."></div>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <button class="btn-kaydet" onclick="profilKaydet()" style="flex: 2; margin-top: 0;">💾 Kaydet</button>
+                        <button class="btn-kaydet" id="btnDurumGuncelle" style="flex: 1; background-color: var(--tehlike); margin-top: 0; display: none;">🗑️ Pasife Al</button>
+                    </div>
+                </div>
+
+                <div class="modal-panel" id="mp-1">
+                    <p id="dereceBilgiNotu" style="font-size: 13px; color: var(--metin-alt); margin-top: 0;">Eksik manuel yarışları buradan girebilirsiniz.</p>
+                    <input type="hidden" id="gizliEskiTarih"><input type="hidden" id="gizliEskiBrans"><input type="hidden" id="gizliEskiSure">
+                    <div class="form-satir">
+                        <div class="form-grup"><label>Tarih</label><input type="text" id="yeniTarih" placeholder="DD.MM.YYYY"></div>
+                        <div class="form-grup" style="flex: 2;"><label>Yarış Adı / Yeri</label><input type="text" id="yeniYaris" placeholder="Örn: Kış Kupası"></div>
+                    </div>
+                    <div class="form-satir">
+                        <div class="form-grup"><label>Branş</label><input type="text" id="yeniBrans" placeholder="Örn: 50m Serbest"></div>
+                        <div class="form-grup"><label>Derece (MM:SS.ss)</label><input type="text" id="yeniSure" placeholder="01:34.50"></div>
+                    </div>
+                    <button class="btn-kaydet" id="btnDereceKaydet" onclick="dereceKaydetIslemi()">➕ Dereceyi Arşive Ekle</button>
+                    <div id="mesajDerece" style="display:none; text-align:center; margin-top:10px; font-weight:bold;"></div>
+                </div>
+
+                <div class="modal-panel" id="mp-2">
+                    <p style="font-size: 13px; color: var(--metin-alt); margin-top: 0;">Hatalı verileri silebilir veya kalem simgesiyle düzeltebilirsiniz.</p>
+                    <div class="modal-derece-liste" id="modalGecmisListe"></div>
+                    <div id="mesajSil" style="display:none; text-align:center; margin-top:10px; color:var(--tehlike); font-weight:bold;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        let tumSporcular = {}; 
+        let aktifSporcuID = null; 
+        let aktifSporcuDurum = 'Aktif';
+        let aktifSporcuVerisi = []; 
+        let grafikObjesi = null; 
+        let guncellemeModu = false;
+
+        let secilenMesafe = "Tümü";
+        let secilenStil = "Tümü";
+
+        // MATEMATİK & TARİH
+        function parseTRDate(str) { if(!str || str === "-") return new Date(1970, 0, 1); let p = str.split("."); if(p.length === 3) return new Date(p[2], p[1] - 1, p[0]); return new Date(1970, 0, 1); }
+        function sureyiSaniyeyeCevir(sureMetni) { if (!sureMetni || sureMetni === "") return 0; try { let p = String(sureMetni).replace(",", ".").split(":"); if (p.length === 2) return parseInt(p[0]) * 60 + parseFloat(p[1]); return parseFloat(p[0]); } catch(e) { return 0; } }
+        function formataCevir(saniye) { if (!saniye) return "-"; let dk = Math.floor(saniye / 60); let sn = (saniye % 60).toFixed(2); if (dk > 0) { if (sn < 10) sn = "0" + sn; return dk + ":" + sn; } return sn; }
+
+        function mobilMenuAc() { document.getElementById('solMenu').classList.add('mobil-acik'); }
+        function mobilMenuKapat() { document.getElementById('solMenu').classList.remove('mobil-acik'); }
+
+        // BAŞLANGIÇ
+        window.onload = async function() {
+            // Ekrana yükleniyor animasyon ve mesajlarını bas
+            document.getElementById("yasGridAlani").innerHTML = "<div style='grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--mavi); font-size: 18px; font-weight: bold;'>⏳ Veriler indiriliyor, lütfen bekleyiniz...</div>";
+            document.getElementById("listeAlani").innerHTML = "<div style='text-align: center; padding: 20px; color: var(--metin-alt); font-weight: bold;'>⏳ Yükleniyor...</div>";
+            
+            try {
+                const res = await fetch(`${API_BASE}/sporcular`); 
+                const data = await res.json();
+                
+                if (data.hata) {
+                    document.getElementById("listeAlani").innerHTML = `<p style='color:var(--tehlike); font-weight:bold; padding: 10px;'>Sunucu Hatası: ${data.hata}</p>`;
+                    return;
+                }
+                if (!data.sporcular || Object.keys(data.sporcular).length === 0) {
+                    document.getElementById("listeAlani").innerHTML = "<p style='color:var(--metin-alt); padding: 10px;'>Henüz aktif/kayıtlı sporcu bulunamadı.</p>";
+                    return;
+                }
+
+                tumSporcular = data.sporcular; 
+                solListeyiCiz(tumSporcular); 
+                takimGruplariCiz(tumSporcular);
+            } catch (hata) { document.getElementById("listeAlani").innerHTML = "<p style='color:var(--tehlike); font-weight:bold; padding: 10px;'>API Bağlantı Hatası! Python sunucusu çalışıyor mu?</p>"; }
+        };
+
+        function gorunumDegistir(id) { ['gorunumDashboard', 'gorunumGrup', 'gorunumProfil'].forEach(g => document.getElementById(g).style.display = 'none'); document.getElementById(id).style.display = 'block'; }
+
+        // LİSTELEME
+        function solListeyiCiz(veriler) {
+            const liste = document.getElementById("listeAlani"); liste.innerHTML = "";
+            let siralidizi = Object.entries(veriler).map(([id, s]) => { return {id, s, dObj: parseTRDate(s.dogum_tarihi)}; }).sort((a, b) => a.dObj - b.dObj);
+            siralidizi.forEach(item => {
+                let div = document.createElement("div"); div.className = "sporcu-kart-sol";
+                div.innerHTML = `<div class="s-isim">${item.s.isim}</div><div class="s-detay"><span>${item.s.dogum_tarihi}</span><span>${item.s.takim_grubu}</span></div>`;
+                div.onclick = () => profiliAc(item.id, item.s); liste.appendChild(div);
+            });
+        }
+        function listeFiltrele() { const aranan = document.getElementById("aramaKutusu").value.toLowerCase(); const flt = {}; for (let id in tumSporcular) { if (tumSporcular[id].isim.toLowerCase().includes(aranan)) flt[id] = tumSporcular[id]; } solListeyiCiz(flt); }
+
+        // DASHBOARD
+        function takimGruplariCiz(veriler) {
+            const grid = document.getElementById("yasGridAlani"); grid.innerHTML = ""; let takimlar = {};
+            Object.values(veriler).forEach(s => { let t = String(s.takim_grubu || "Diğer").trim(); takimlar[t] = (takimlar[t] || 0) + 1; });
+            Object.keys(takimlar).sort().forEach(t => {
+                let div = document.createElement("div"); div.className = "yas-pano";
+                div.innerHTML = `<h2>${t}</h2><p>${takimlar[t]} Sporcu</p>`;
+                div.onclick = () => grubaGir(t); grid.appendChild(div);
+            });
+        }
+        function grubaGir(takimAdi) {
+            gorunumDegistir('gorunumGrup'); document.getElementById("grupBaslik").innerText = `${takimAdi} Sporcuları`;
+            const grid = document.getElementById("grupSporcuGrid"); grid.innerHTML = "";
+            Object.entries(tumSporcular).forEach(([id, s]) => {
+                if(String(s.takim_grubu || "Diğer").trim() === String(takimAdi).trim()) {
+                    let div = document.createElement("div"); div.className = "kart-detay";
+                    div.innerHTML = `<div class="isim">${s.isim}</div><div class="bilgi">${s.dogum_tarihi}</div>`;
+                    div.onclick = () => profiliAc(id, s); grid.appendChild(div);
+                }
+            });
+        }
+
+        // PROFİL VE YARIŞLAR
+        async function profiliAc(id, s) {
+            mobilMenuKapat(); // Mobildeyse listeyi gizle
+            aktifSporcuID = id; 
+            aktifSporcuDurum = s.durum || 'Aktif';
+            gorunumDegistir('gorunumProfil');
+            document.getElementById("profilIsim").innerText = s.isim; document.getElementById("profilDetay").innerText = `${s.takim_grubu} • ${s.dogum_tarihi}`;
+            
+            document.getElementById("cv_tc").innerText = s.tc_kimlik || "-";
+            document.getElementById("cv_veli").innerText = s.veli_ad || "-"; document.getElementById("cv_tel").innerText = s.veli_tel || "-";
+            document.getElementById("cv_kan").innerText = s.kan_grubu || "-"; document.getElementById("cv_cinsiyet").innerText = s.cinsiyet || "-";
+            document.getElementById("cv_saglik").innerText = s.saglik || "-";
+
+            const v2ad = document.getElementById("crm_veli2_ad"), v2tel = document.getElementById("crm_veli2_tel");
+            if(s.veli_2_ad && s.veli_2_ad !== '-') {
+                document.getElementById("cv_veli2_ad").innerText = s.veli_2_ad;
+                document.getElementById("cv_veli2_tel").innerText = s.veli_2_tel || "-";
+                v2ad.style.display = "block"; v2tel.style.display = "block";
+            } else {
+                v2ad.style.display = "none"; v2tel.style.display = "none";
+            }
+
+            document.getElementById("mesafeButonlari").innerHTML = "<p style='color:#64748b;'>Yükleniyor...</p>";
+            document.getElementById("stilButonlari").innerHTML = ""; document.getElementById("profilDereceler").innerHTML = "";
+            if(grafikObjesi !== null) grafikObjesi.destroy(); document.getElementById("grafikUyari").style.display = "block";
+
+            try {
+                const res = await fetch(`${API_BASE}/sporcu/detay/${id}`); const data = await res.json();
+                
+                // Yarışları işle
+                if (data.yarislar && data.yarislar.length > 0) {
+                    aktifSporcuVerisi = data.yarislar.map(d => ({
+                        brans: (d["Branş"] || d["Brans"] || "Bilinmiyor").toUpperCase().trim(),
+                        tarihStr: d["Tarih"] || "-", tarihObj: parseTRDate(d["Tarih"]),
+                        yaris: d["Yarış Adı"] || d["Yaris"] || "-", dereceMetin: d["Derece"] || "-", saniye: sureyiSaniyeyeCevir(d["Derece"])
+                    }));
+                    bransSekmeleriniOlustur(); modalGecmisListesiniDoldur();
+                } else {
+                    document.getElementById("mesafeButonlari").innerHTML = ""; document.getElementById("stilButonlari").innerHTML = "";
+                    document.getElementById("profilDereceler").innerHTML = "<p style='color:#64748b;'>Arşivde yarış bulunamadı.</p>";
+                    aktifSporcuVerisi = []; modalGecmisListesiniDoldur();
+                }
+
+                // Antrenmanları İşle
+                const aAlan = document.getElementById("antrenmanListeAlani");
+                if (!data.antrenmanlar || data.antrenmanlar.length === 0) {
+                    aAlan.innerHTML = "<p style='color:var(--metin-alt); padding:10px;'>Bu sporcunun arşivde antrenman kaydı yok.</p>";
+                } else {
+                    let html = "";
+                    data.antrenmanlar.forEach(a => {
+                        let renk = a.tip === 'Havuz' ? 'var(--mavi)' : 'var(--bordo)';
+                        
+                        // Detayları (Setleri) JSON'dan okuyup HTML listesine dönüştürme
+                        let detayHtml = "";
+                        try {
+                            let detaylar = JSON.parse(a.detay_json);
+                            if (a.tip === 'Havuz') {
+                                detaylar.forEach(set => {
+                                    let metin = set.tekrar > 1 ? `${set.tekrar} x ${set.mesafe}m ${set.stil}` : `${set.mesafe}m ${set.stil}`;
+                                    let eq = set.ekipmanlar && set.ekipmanlar.length > 0 ? ` <span style="color:var(--mavi); font-size:11px; font-weight:bold;">[${set.ekipmanlar.join(', ')}]</span>` : "";
+                                    detayHtml += `<div style="padding:4px 0; border-bottom:1px dashed var(--kenarlik); font-size:13px; color:var(--metin-ana);">• ${metin}${eq}</div>`;
+                                });
+                            } else {
+                                detaylar.forEach(egz => {
+                                    detayHtml += `<div style="padding:4px 0; border-bottom:1px dashed var(--kenarlik); font-size:13px; color:var(--metin-ana);">• <b>${egz.egzersiz}</b> <span style="color:var(--metin-alt); font-size:11px;">(${egz.setSayisi}x${egz.tekrarSuresi})</span></div>`;
+                                });
+                            }
+                        } catch(e) { detayHtml = "<div style='font-size:12px; color:var(--metin-alt);'>İçerik detayı okunamadı.</div>"; }
+
+                        html += `<div style="border:1px solid var(--kenarlik); background:var(--arkaplan); padding:15px; margin-bottom:10px; border-radius:8px; border-left:4px solid ${renk}">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <strong style="color:${renk}; font-size:15px;">${a.program_adi} (${a.tip})</strong>
+                                <span style="color:var(--metin-alt); font-size:12px; font-weight:bold;">📅 ${a.tarih}</span>
+                            </div>
+                            <div style="background:var(--kart-bg); border:1px solid var(--kenarlik); padding:10px; border-radius:6px; margin-bottom:10px;">${detayHtml}</div>
+                            <div style="font-size:14px; font-weight:bold; color:var(--metin-ana); background:#fff; padding:5px 10px; border-radius:5px; display:inline-block; margin-top:5px; border: 1px solid var(--kenarlik);">
+                                Toplam: ${a.metraj_veya_hareket}
+                            </div>
+                        </div>`;
+                    });
+                    aAlan.innerHTML = html;
+                }
+                
+                // Devam Durumunu İşle
+                const devAlan = document.getElementById("devamListesiAlan");
+                if (!data.yoklama || data.yoklama.length === 0) {
+                    devAlan.innerHTML = "<p style='color:var(--metin-alt); padding:10px;'>Bu sporcunun yoklama geçmişi bulunamadı.</p>";
+                } else {
+                    let dHtml = "";
+                    data.yoklama.forEach(y => {
+                        let renk = y.durum === "Geldi" ? "var(--basari)" : (y.durum === "Gelmedi" ? "var(--tehlike)" : "var(--uyari)");
+                        dHtml += `<div class="devam-liste-item"><span>📅 ${y.tarih}</span><strong style="color:${renk}">${y.durum}</strong></div>`;
+                    });
+                    devAlan.innerHTML = dHtml;
+                }
+                
+                profilSekmeDegistir('yaris'); // Varsayılan olarak yarış sekmesini aç
+            } catch (e) { console.error(e); }
+        }
+
+        // FİLTRE VE GRAFİK MOTORU (Eksiksiz!)
+        function bransSekmeleriniOlustur() {
+            let mesafeler = new Set(), stiller = new Set();
+            aktifSporcuVerisi.forEach(d => {
+                if(d.brans !== "BİLİNMİYOR") {
+                    let p = d.brans.split(" ");
+                    if(p.length >= 2) { mesafeler.add(p[0]); stiller.add(p.slice(1).join(" ")); } else { stiller.add(d.brans); }
+                }
+            });
+
+            let mHtml = `<button class="brans-btn aktif" id="m-Tümü" onclick="mesafeSec('Tümü')">Tümü</button>`;
+            [...mesafeler].sort().forEach(m => mHtml += `<button class="brans-btn" id="m-${m}" onclick="mesafeSec('${m}')">${m}</button>`);
+            document.getElementById("mesafeButonlari").innerHTML = mHtml;
+
+            let sHtml = `<button class="brans-btn aktif" id="s-Tümü" onclick="stilSec('Tümü')">Tümü</button>`;
+            [...stiller].sort().forEach(s => { let idS = s.replace(/\s+/g, '-'); sHtml += `<button class="brans-btn" id="s-${idS}" onclick="stilSec('${s}')">${s}</button>`; });
+            document.getElementById("stilButonlari").innerHTML = sHtml;
+
+            secilenMesafe = "Tümü"; secilenStil = "Tümü"; filtreleriUygula();
+        }
+
+        function mesafeSec(m) { secilenMesafe = m; document.querySelectorAll('#mesafeButonlari .brans-btn').forEach(b => b.classList.remove('aktif')); document.getElementById(`m-${m}`).classList.add('aktif'); filtreleriUygula(); }
+        function stilSec(s) { secilenStil = s; document.querySelectorAll('#stilButonlari .brans-btn').forEach(b => b.classList.remove('aktif')); document.getElementById(`s-${s.replace(/\s+/g, '-')}`).classList.add('aktif'); filtreleriUygula(); }
+
+        function filtreleriUygula() {
+            let liste = aktifSporcuVerisi.filter(d => {
+                let uyar = true;
+                if(secilenMesafe !== "Tümü" && !d.brans.startsWith(secilenMesafe)) uyar = false;
+                if(secilenStil !== "Tümü" && !d.brans.includes(secilenStil)) uyar = false;
+                return uyar;
+            });
+
+            const dAlani = document.getElementById("profilDereceler"); dAlani.innerHTML = "";
+            document.getElementById("listeBaslik").innerText = (secilenMesafe === "Tümü" && secilenStil === "Tümü") ? "Tüm Yarışlar" : `${secilenMesafe !== "Tümü" ? secilenMesafe : ""} ${secilenStil !== "Tümü" ? secilenStil : ""}`.trim() + " Geçmişi";
+
+            liste.sort((a,b) => b.tarihObj - a.tarihObj).forEach(d => {
+                dAlani.innerHTML += `<div class="derece-satir"><div class="ds-sol"><strong>${d.brans}</strong><span>${d.tarihStr} - ${d.yaris}</span></div><div class="ds-sag">${d.dereceMetin}</div></div>`;
+            });
+
+            let bBrans = [...new Set(liste.map(d => d.brans))];
+            if(bBrans.length === 1 && secilenMesafe !== "Tümü" && secilenStil !== "Tümü") {
+                document.getElementById("profilGrafik").style.display = "block"; document.getElementById("grafikUyari").style.display = "none"; document.getElementById("grafikBaslik").innerText = `${bBrans[0]} İvmesi`;
+                grafikCiz([...liste].sort((a,b) => a.tarihObj - b.tarihObj));
+            } else {
+                if(grafikObjesi) { grafikObjesi.destroy(); grafikObjesi = null;}
+                document.getElementById("profilGrafik").style.display = "none"; document.getElementById("grafikUyari").style.display = "block"; document.getElementById("grafikBaslik").innerText = "Performans Gelişimi";
+            }
+        }
+
+        function grafikCiz(veriler) {
+            const ctx = document.getElementById('profilGrafik').getContext('2d'); if(grafikObjesi) grafikObjesi.destroy();
+            let temiz = veriler.map(v => ({ t: v.tarihStr, s: v.saniye, m: v.dereceMetin })).filter(x => x.s > 0);
+            grafikObjesi = new Chart(ctx, {
+                type:'line', data: { labels: temiz.map(x=>x.t), datasets: [{ data: temiz.map(x=>x.s), borderColor:'#0284c7', tension:0.3, fill:true, backgroundColor:'rgba(2, 132, 199, 0.1)', borderWidth:3, pointRadius:5 }] },
+                options: { scales: { y: { reverse: true, ticks: { callback: function(val) { return formataCevir(val); }, color:'#64748b' }, grid:{color:'#e2e8f0'} }, x: { ticks:{color:'#64748b'}, grid:{display:false} } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ` Derece: ${temiz[c.dataIndex].m}`; } } } } }
+            });
+        }
+
+        // --- YENİ EKLENEN/AYRILAN MODALLAR ---
+        function modalKapat(modalId) { document.getElementById(modalId).style.display = "none"; guncellemeModu = false; }
+        
+        function yeniSporcuModali() { 
+            aktifSporcuID = null; 
+            document.getElementById("modalBaslik").innerText = "Yeni Sporcu Kaydı"; 
+            ['editAd','editTarih','editTC','editTakim','editVeliAd','editVeliTel','editVeli2Ad','editVeli2Tel','editKan','editSaglik'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById("veli2Satir").style.display = "none";
+            document.getElementById("btnVeli2Toggle").innerHTML = '⊕';
+            document.getElementById("btnDurumGuncelle").style.display = "none";
+            document.getElementById("ayarModal").style.display = "flex"; 
+            modalSekme(0); 
+        }
+        
+        function duzenleModaliAc() {
+            let s = tumSporcular[aktifSporcuID];
+            document.getElementById("editAd").value = s.isim; 
+            document.getElementById("editTarih").value = s.dogum_tarihi.replace(" Doğumlu","");
+            document.getElementById("editTakim").value = s.takim_grubu; 
+            document.getElementById("editCinsiyet").value = s.cinsiyet !== "-" ? s.cinsiyet : "Erkek";
+            document.getElementById("editTC").value = s.tc_kimlik !== "-" ? s.tc_kimlik : "";
+            document.getElementById("editVeliAd").value = s.veli_ad !== "-" ? s.veli_ad : ""; document.getElementById("editVeliTel").value = s.veli_tel !== "-" ? s.veli_tel : "";
+            document.getElementById("editVeli2Ad").value = s.veli_2_ad !== "-" ? s.veli_2_ad : ""; document.getElementById("editVeli2Tel").value = s.veli_2_tel !== "-" ? s.veli_2_tel : "";
+            document.getElementById("editKan").value = s.kan_grubu !== "-" ? s.kan_grubu : ""; document.getElementById("editSaglik").value = s.saglik !== "-" ? s.saglik : "";
+            document.getElementById("modalBaslik").innerText = `${s.isim} - Ayarlar`; 
+
+            if(s.veli_2_ad && s.veli_2_ad !== '-') {
+                document.getElementById("veli2Satir").style.display = "flex";
+                document.getElementById("btnVeli2Toggle").innerHTML = '⊖';
+            } else {
+                document.getElementById("veli2Satir").style.display = "none";
+                document.getElementById("btnVeli2Toggle").innerHTML = '⊕';
+            }
+
+            const durumBtn = document.getElementById("btnDurumGuncelle");
+            durumBtn.style.display = "block";
+            if (aktifSporcuDurum === 'Pasif') {
+                durumBtn.innerText = '✅ Aktife Al'; durumBtn.style.backgroundColor = 'var(--basari)'; durumBtn.onclick = () => guncelleDurum('Aktif');
+            } else {
+                durumBtn.innerText = '🗑️ Pasife Al'; durumBtn.style.backgroundColor = 'var(--tehlike)'; durumBtn.onclick = () => guncelleDurum('Pasif');
+            }
+
+            document.getElementById("ayarModal").style.display = "flex"; 
+            modalSekme(0);
+        }
+
+        function modalSekme(index) {
+            document.querySelectorAll('.sekme-btn').forEach((btn, i) => btn.className = i === index ? 'sekme-btn aktif' : 'sekme-btn');
+            document.querySelectorAll('.modal-panel').forEach((panel, i) => panel.className = i === index ? 'modal-panel aktif' : 'modal-panel');
+            if(index === 1 && !guncellemeModu) resetDereceFormu();
+        }
+
+        async function profilKaydet() {
+            const payload = { 
+                sporcu_id: aktifSporcuID, 
+                ad_soyad: document.getElementById("editAd").value, 
+                cinsiyet: document.getElementById("editCinsiyet").value, 
+                tc_kimlik: document.getElementById("editTC").value, 
+                dogum_tarihi: document.getElementById("editTarih").value, 
+                takim_grubu: document.getElementById("editTakim").value, 
+                favori_brans: "-", 
+                veli_ad_soyad: document.getElementById("editVeliAd").value, 
+                veli_telefon: document.getElementById("editVeliTel").value, 
+                veli_2_ad_soyad: document.getElementById("editVeli2Ad").value,
+                veli_2_telefon: document.getElementById("editVeli2Tel").value,
+                adres: "-", 
+                kan_grubu: document.getElementById("editKan").value, 
+                saglik_durumu: document.getElementById("editSaglik").value, 
+                servis_kullanimi: "-" 
+            };
+            try { await fetch(`${API_BASE}/sporcu/kaydet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }); window.location.reload(); } catch(e) { alert("Hata!"); }
+        }
+
+        async function guncelleDurum(yeniDurum) {
+            const eylem = yeniDurum === 'Aktif' ? 'aktife almak' : 'pasife almak';
+            const mesaj = yeniDurum === 'Aktif' 
+                ? "Bu sporcuyu tekrar aktifleştirmek istediğinize emin misiniz?\n\nSporcu tüm listelerde (CRM, Yoklama vb.) tekrar görünür olacaktır."
+                : "Bu sporcuyu pasife almak istediğinize emin misiniz?\n\nSporcunun geçmiş arşivi SİLİNMEZ, sadece ana listelerden kaldırılır. Daha sonra bu ekrandan tekrar aktifleştirebilirsiniz.";
+            if(!confirm(mesaj)) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/sporcu/durum/guncelle`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: aktifSporcuID, durum: yeniDurum }) });
+                const data = await res.json();
+                if(res.ok) {
+                    alert("✅ " + data.mesaj); window.location.reload();
+                } else {
+                    alert("❌ Hata: " + (data.detail || data.hata));
+                }
+            } catch(e) { alert("Bağlantı hatası oluştu!"); }
+        }
+
+        function profilSekmeDegistir(sekme) {
+            document.getElementById('btnSekmeYaris').classList.remove('aktif');
+            document.getElementById('btnSekmeAntrenman').classList.remove('aktif');
+            document.getElementById('btnSekmeDevam').classList.remove('aktif');
+            document.getElementById('btnSekmeGyaris').classList.remove('aktif');
+            document.getElementById('profilYarisAlani').style.display = 'none';
+            document.getElementById('profilAntrenmanAlani').style.display = 'none';
+            document.getElementById('profilDevamAlani').style.display = 'none';
+            document.getElementById('profilGyarisAlani').style.display = 'none';
+
+            if(sekme === 'yaris') {
+                document.getElementById('btnSekmeYaris').classList.add('aktif');
+                document.getElementById('profilYarisAlani').style.display = 'block';
+            } else if(sekme === 'antrenman') {
+                document.getElementById('btnSekmeAntrenman').classList.add('aktif');
+                document.getElementById('profilAntrenmanAlani').style.display = 'block';
+            } else if(sekme === 'devam') {
+                document.getElementById('btnSekmeDevam').classList.add('aktif');
+                document.getElementById('profilDevamAlani').style.display = 'block';
+            } else {
+                document.getElementById('btnSekmeGyaris').classList.add('aktif');
+                document.getElementById('profilGyarisAlani').style.display = 'block';
+            }
+        }
+
+        // GEÇMİŞİ DÜZENLE VE SİL 
+        function modalGecmisListesiniDoldur() {
+            const liste = document.getElementById("modalGecmisListe"); liste.innerHTML = "";
+            let kopya = [...aktifSporcuVerisi].sort((a, b) => b.tarihObj - a.tarihObj);
+            kopya.forEach(d => {
+                liste.innerHTML += `<div class="modal-derece-kutu">
+                        <div><strong style="color:var(--metin-ana); display:block; font-size:14px;">${d.brans} (${d.dereceMetin})</strong><span style="font-size:12px; color:var(--metin-alt)">${d.tarihStr} - ${d.yaris}</span></div>
+                        <div><button class="aksiyon-btn btn-duzen" onclick="dereceDuzenleyeGec('${d.tarihStr}', '${d.yaris}', '${d.brans}', '${d.dereceMetin}')">✏️</button>
+                        <button class="aksiyon-btn btn-sil" onclick="dereceSil('${d.tarihStr}', '${d.brans}', '${d.dereceMetin}')">✖</button></div></div>`;
+            });
+        }
+
+        function toggleVeli2(event) {
+            event.preventDefault();
+            const satir = document.getElementById("veli2Satir");
+            const btn = document.getElementById("btnVeli2Toggle");
+            if (satir.style.display === "none") {
+                satir.style.display = "flex"; btn.innerHTML = '⊖';
+            } else {
+                satir.style.display = "none"; btn.innerHTML = '⊕';
+                document.getElementById('editVeli2Ad').value = '';
+                document.getElementById('editVeli2Tel').value = '';
+            }
+        }
+
+        function resetDereceFormu() {
+            ['yeniTarih','yeniYaris','yeniBrans','yeniSure'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById("sekmeDereceEkle").innerText = "Derece Ekle"; document.getElementById("btnDereceKaydet").innerText = "➕ Dereceyi Arşive Ekle";
+            document.getElementById("dereceBilgiNotu").innerText = "Eksik manuel yarışları buradan girebilirsiniz."; guncellemeModu = false;
+        }
+
+        function dereceDuzenleyeGec(tarih, yaris, brans, sure) {
+            guncellemeModu = true; document.getElementById("sekmeDereceEkle").innerText = "Derece Güncelle"; document.getElementById("btnDereceKaydet").innerText = "🔄 Değişikliği Kaydet";
+            document.getElementById("dereceBilgiNotu").innerText = "Lütfen süreyi düzeltip kaydet butonuna basın.";
+            document.getElementById("yeniTarih").value = tarih; document.getElementById("yeniYaris").value = yaris; document.getElementById("yeniBrans").value = brans; document.getElementById("yeniSure").value = sure;
+            document.getElementById("gizliEskiTarih").value = tarih; document.getElementById("gizliEskiBrans").value = brans; document.getElementById("gizliEskiSure").value = sure;
+            modalSekme(1);
+        }
+
+        async function dereceKaydetIslemi() {
+            const t = document.getElementById("yeniTarih").value, y = document.getElementById("yeniYaris").value, b = document.getElementById("yeniBrans").value, s = document.getElementById("yeniSure").value;
+            let msg = document.getElementById("mesajDerece");
+            if(!t || !b || !s) { msg.innerText = "Tarih, branş ve süreyi girin!"; msg.style.color = "var(--tehlike)"; msg.style.display = "block"; return; }
+            if(guncellemeModu) await fetch(`${API_BASE}/derece/sil`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: aktifSporcuID, tarih: document.getElementById("gizliEskiTarih").value, brans: document.getElementById("gizliEskiBrans").value, derece: document.getElementById("gizliEskiSure").value }) });
+            try {
+                await fetch(`${API_BASE}/derece/ekle`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: aktifSporcuID, tarih: t, yaris_adi: y, brans: b, derece: s }) });
+                msg.innerText = guncellemeModu ? "✅ Güncellendi!" : "✅ Eklendi!"; msg.style.color = "var(--basari)"; msg.style.display = "block";
+                setTimeout(() => { msg.style.display="none"; profiliAc(aktifSporcuID, tumSporcular[aktifSporcuID]); modalSekme(2); resetDereceFormu(); }, 1000);
+            } catch(e) { msg.innerText="Hata!"; msg.style.color="var(--tehlike)"; msg.style.display="block"; }
+        }
+
+        async function dereceSil(tarih, brans, sure) {
+            if(!confirm(`Bu dereceyi (${sure}) silmek istediğinize emin misiniz?`)) return;
+            let msg = document.getElementById("mesajSil");
+            try {
+                await fetch(`${API_BASE}/derece/sil`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: aktifSporcuID, tarih: tarih, brans: brans, derece: sure }) });
+                msg.innerText = "✅ Silindi!"; msg.style.display = "block";
+                setTimeout(() => { msg.style.display="none"; profiliAc(aktifSporcuID, tumSporcular[aktifSporcuID]); }, 1000);
+            } catch(e) { msg.innerText="Hata!"; msg.style.display="block"; }
+        }
+    </script>
+</body>
+</html>

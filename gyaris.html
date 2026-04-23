@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelecek Yarış Programı</title>
+    <style>
+        :root {
+            --arkaplan: #f0f2f5; 
+            --kart-bg: #ffffff; 
+            --bordo: #9f1239; 
+            --mavi: #0284c7; 
+            --metin-ana: #1e293b; 
+            --metin-alt: #64748b; 
+            --kenarlik: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arkaplan);
+            color: var(--metin-ana);
+            margin: 0;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .kutu {
+            background-color: var(--kart-bg);
+            border: 1px solid var(--kenarlik);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .kutu h1 { color: var(--mavi); margin-top: 0; }
+        .btn-ana { display: inline-block; background-color: var(--mavi); color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.2s;}
+        .btn-ana:hover { background-color: #0369a1; }
+    </style>
+</head>
+<body>
+    <div class="kutu">
+        <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
+        <h1>Yapım Aşamasında</h1>
+        <p style="color: var(--metin-alt); line-height: 1.6;">Gelecek Yarış Programı modülü bu alana inşa edilecektir. Hazır olduğunda ana menüden veya sporcu profillerinden bu sisteme veri aktarabileceksiniz.</p>
+        <a href="index.html" class="btn-ana">Ana Menüye Dön</a>
+    </div>
+</body>
+</html>

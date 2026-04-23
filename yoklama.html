@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabzon Yüzme | Devam Çizelgesi</title>
+    <style>
+        /* --- BEYAZ / AYDINLIK TEMA (LIGHT MODE) --- */
+        :root {
+            --arkaplan: #f0f2f5; 
+            --kart-bg: #ffffff; 
+            --bordo: #9f1239; 
+            --mavi: #0284c7; 
+            --metin-ana: #1e293b; 
+            --metin-alt: #64748b; 
+            --kenarlik: #e2e8f0;
+            --geldi: #10b981; 
+            --gelmedi: #ef4444; 
+            --izinli: #f59e0b; 
+            --gec: #8b5cf6;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--arkaplan); color: var(--metin-ana); margin: 0; display: flex; height: 100vh; overflow: hidden; box-sizing: border-box; overflow-x: hidden; }
+
+        /* SOL MENÜ */
+        .sol-menu { width: 300px; background-color: var(--kart-bg); border-right: 1px solid var(--kenarlik); display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; z-index: 10; box-shadow: 2px 0 5px rgba(0,0,0,0.05);}
+        .baslik-alan { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .baslik-alan h2 { margin: 0; font-size: 20px; color: var(--bordo); }
+        .btn-ana { text-decoration: none; color: var(--mavi); font-size: 13px; font-weight: bold; background-color: #f0f9ff; border: 1px solid var(--mavi); padding: 8px 15px; border-radius: 8px; transition: 0.2s;}
+        .btn-ana:hover { background-color: var(--mavi); color: white; }
+
+        .etiket { font-size: 11px; color: var(--metin-alt); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--kenarlik); padding-bottom: 5px;}
+        .grup-listesi { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; overflow-y: auto; box-sizing: border-box; width: 100%; padding-right: 5px;}
+        
+        .grup-kart { padding: 15px 10px; background-color: var(--kart-bg); border-radius: 12px; cursor: pointer; border: 1px solid var(--kenarlik); font-weight: bold; text-align: center; transition: 0.2s; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;}
+        .grup-kart:hover, .grup-kart.aktif { border-color: var(--mavi); background-color: #f0f9ff; color: var(--mavi);}
+        .btn-tumu { background-color: var(--arkaplan); border-color: var(--mavi); color: var(--mavi); grid-column: 1 / -1; aspect-ratio: auto; padding: 15px; margin-bottom: 5px; box-sizing: border-box;}
+
+        /* SAĞ ALAN */
+        .sag-alan { flex: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; background-color: var(--arkaplan); position: relative; }
+        .tepe-kontrol { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background-color: var(--kart-bg); padding: 15px 20px; border-radius: 10px; border-left: 4px solid var(--bordo); box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .tepe-kontrol h3 { margin: 0; color: var(--metin-ana); }
+        .tarih-secici { padding: 10px; border-radius: 8px; background-color: #fff; color: var(--metin-ana); border: 1px solid var(--kenarlik); outline: none; font-weight: bold;}
+
+        .ogrenci-listesi { display: flex; flex-direction: column; gap: 10px; margin-bottom: 120px; }
+        .ogrenci-satir { display: flex; justify-content: space-between; align-items: center; background-color: var(--kart-bg); padding: 12px 20px; border-radius: 10px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .ogrenci-isim { font-size: 15px; font-weight: bold; color: var(--metin-ana); }
+        .ogrenci-id { font-size: 11px; color: var(--metin-alt); display: block; margin-top: 2px;}
+
+        /* DURUM BUTONLARI */
+        .durum-butonlari { display: flex; gap: 5px; }
+        .btn-durum { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--kenarlik); background-color: var(--arkaplan); color: var(--metin-alt); font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 12px;}
+        .btn-durum:hover { border-color: var(--mavi); color: var(--mavi); }
+        
+        .btn-durum.secili[data-durum="Geldi"] { background-color: var(--geldi); border-color: var(--geldi); color: white; }
+        .btn-durum.secili[data-durum="Gelmedi"] { background-color: var(--gelmedi); border-color: var(--gelmedi); color: white; }
+        .btn-durum.secili[data-durum="İzinli"] { background-color: var(--izinli); border-color: var(--izinli); color: white; }
+        .btn-durum.secili[data-durum="Geç"] { background-color: var(--gec); border-color: var(--gec); color: white; }
+
+        /* ALT ÇUBUK */
+        .alt-cubuk { position: fixed; bottom: 0; right: 0; width: calc(100% - 300px); background-color: var(--kart-bg); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; border-top: 1px solid var(--kenarlik); box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .ozet-bilgi span { margin-right: 20px; font-weight: bold; color: var(--metin-alt); }
+        .ozet-bilgi span strong { color: var(--metin-ana); font-size: 18px; }
+        .btn-kaydet { background-color: var(--mavi); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-kaydet:hover { background-color: #0369a1; }
+        #mesajKutusu { display: none; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: bold; }
+
+        .mobil-ust-bar { display: none; }
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sol-menu { width: 100%; border-right: none; border-bottom: none; max-height: none; min-height: 100vh; }
+            .sol-menu.mobil-gizle { display: none !important; }
+            .sag-alan { padding: 15px; overflow-y: visible; margin-bottom: 0; padding-bottom: 120px; }
+            .ogrenci-listesi { margin-bottom: 20px; }
+            .ogrenci-satir { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .durum-butonlari { width: 100%; justify-content: space-between; }
+            .btn-durum { flex: 1; text-align: center; padding: 8px 5px; font-size: 11px; margin-right: 4px; }
+            .btn-durum:last-child { margin-right: 0; }
+            .mobil-ust-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; }
+            .alt-cubuk { position: sticky; width: 100%; flex-direction: column; gap: 15px; padding: 15px; }
+            .ozet-bilgi { display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; }
+            .ozet-bilgi span { margin-right: 0; }
+            .btn-kaydet { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sol-menu" id="solMenu">
+        <div class="baslik-alan">
+            <h2>Devam Çizelgesi</h2>
+            <a href="index.html" class="btn-ana">🏠 Menü</a>
+        </div>
+        
+        <span class="etiket">Gruplar</span>
+        <div class="grup-listesi" id="grupAlani">
+            <div style="text-align: center; padding: 20px; color: var(--mavi); font-weight: bold; font-size: 14px;">⏳ Veriler indiriliyor...</div>
+        </div>
+    </div>
+
+    <div class="sag-alan" id="sagAlan" style="display: none;">
+        <div class="mobil-ust-bar">
+            <button onclick="mobilGruplaraDon()" style="padding:10px 15px; background:#f1f5f9; border:1px solid var(--kenarlik); border-radius:8px; font-weight:bold; color:var(--metin-ana); cursor:pointer;">⬅ Gruplara Dön</button>
+            <a href="index.html" style="padding:10px 15px; background:#f0f9ff; border:1px solid var(--mavi); border-radius:8px; font-weight:bold; color:var(--mavi); text-decoration:none;">🏠 Menü</a>
+        </div>
+        <div class="tepe-kontrol">
+            <h3 id="seciliGrupBaslik">Grup Seçiniz</h3>
+            <input type="date" id="yoklamaTarih" class="tarih-secici">
+        </div>
+        <div id="mesajKutusu"></div>
+        <div class="ogrenci-listesi" id="ogrenciListesi"></div>
+    </div>
+
+    <div class="alt-cubuk" id="altCubuk" style="display: none;">
+        <div class="ozet-bilgi">
+            <span>Toplam: <strong id="ozetToplam">0</strong></span>
+            <span style="color: var(--geldi)">Geldi: <strong id="ozetGeldi">0</strong></span>
+            <span style="color: var(--gelmedi)">Yok: <strong id="ozetGelmedi">0</strong></span>
+        </div>
+        <button class="btn-kaydet" onclick="yoklamaKaydet()">💾 Listeyi Excel'e Kaydet</button>
+    </div>
+
+    <!-- İLERLEME (PROGRESS) MODALI -->
+    <div id="progressModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);">
+        <div style="background:var(--kart-bg); padding:30px; border-radius:15px; width:400px; max-width:90%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
+            <h2 style="margin: 0 0 10px 0; color: var(--mavi);">Yoklama İşleniyor</h2>
+            <p style="color: var(--metin-alt); font-size: 14px; margin-bottom: 20px;">Lütfen sekmeyi kapatmayın, API kotasına uygun şekilde güvenli kayıt yapılıyor...</p>
+            
+            <div style="background: #e2e8f0; border-radius: 10px; height: 22px; width: 100%; overflow: hidden; margin-bottom: 15px;">
+                <div id="progressBar" style="background: var(--mavi); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+            </div>
+            
+            <strong id="progressText" style="font-size: 20px; color: var(--metin-ana);">0 / 0 Sporcu</strong>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        let tumSporcular = {}; 
+        let aktifGrupAdi = "";
+        let yoklamaDurumu = {}; 
+
+        window.onload = async function() {
+            document.getElementById('yoklamaTarih').valueAsDate = new Date();
+            try {
+                const response = await fetch(`${API_BASE}/sporcular`);
+                const data = await response.json();
+                
+                if (data.hata) {
+                    document.getElementById("grupAlani").innerHTML = `<p style='color:var(--gelmedi); font-weight:bold; padding: 10px;'>Sunucu Hatası: ${data.hata}</p>`;
+                    return;
+                }
+                if (!data.sporcular || Object.keys(data.sporcular).length === 0) {
+                    document.getElementById("grupAlani").innerHTML = "<p style='color:var(--metin-alt); padding: 10px;'>Henüz aktif sporcu bulunamadı.</p>";
+                    return;
+                }
+
+                tumSporcular = data.sporcular; 
+                gruplariCiz();
+            } catch (hata) { document.getElementById("grupAlani").innerHTML = "<p style='color:var(--gelmedi); font-weight:bold; padding: 10px;'>API Bağlantı Hatası!</p>"; }
+        };
+
+        function gruplariCiz() {
+            const alan = document.getElementById("grupAlani");
+            alan.innerHTML = "";
+            
+            // 1. "TÜMÜ" SEKMESİNİ EN BAŞA EKLE
+            let kartTumu = document.createElement("div");
+            kartTumu.className = "grup-kart btn-tumu";
+            kartTumu.innerText = "🌍 TÜM SPORCULAR";
+            kartTumu.onclick = () => grubuAc("Tümü", kartTumu);
+            alan.appendChild(kartTumu);
+
+            // 2. DİĞER GRUPLARI LİSTELE
+            let takimlar = new Set();
+            Object.values(tumSporcular).forEach(s => takimlar.add(String(s.takim_grubu || "Diğer").trim()));
+            
+            [...takimlar].sort().forEach(grup => {
+                let kart = document.createElement("div");
+                kart.className = "grup-kart";
+                kart.innerText = grup;
+                kart.onclick = () => grubuAc(grup, kart);
+                alan.appendChild(kart);
+            });
+        }
+
+        function mobilGruplaraDon() {
+            document.getElementById('solMenu').classList.remove('mobil-gizle');
+            document.getElementById('sagAlan').style.display = 'none';
+            document.getElementById('altCubuk').style.display = 'none';
+        }
+
+        function grubuAc(grupAdi, seciliKart) {
+            aktifGrupAdi = grupAdi; 
+            yoklamaDurumu = {}; 
+            
+            document.querySelectorAll('.grup-kart').forEach(k => k.classList.remove('aktif'));
+            seciliKart.classList.add('aktif');
+            
+            document.getElementById("sagAlan").style.display = "flex"; 
+            document.getElementById("altCubuk").style.display = "flex";
+            document.getElementById("seciliGrupBaslik").innerText = (grupAdi === "Tümü") ? "Tüm Sporcular Çizelgesi" : `${grupAdi} Yoklaması`;
+            document.getElementById("mesajKutusu").style.display = "none";
+            
+            if (window.innerWidth <= 768) {
+                document.getElementById('solMenu').classList.add('mobil-gizle');
+                window.scrollTo(0,0);
+            }
+
+            const liste = document.getElementById("ogrenciListesi");
+            liste.innerHTML = "";
+
+            // ÖĞRENCİLERİ FİLTRELE
+            let ogrenciler = [];
+            Object.entries(tumSporcular).forEach(([id, s]) => {
+                // Eğer "Tümü" seçiliyse hepsini al, değilse gruba göre al
+                if(grupAdi === "Tümü" || String(s.takim_grubu || "Diğer").trim() === grupAdi) {
+                    ogrenciler.push({id: id, isim: s.isim});
+                }
+            });
+
+            // ALFABETİK SIRALAMA VE ÇİZİM
+            ogrenciler.sort((a,b) => a.isim.localeCompare(b.isim, 'tr')).forEach(ogr => {
+                yoklamaDurumu[ogr.id] = { durum: "Geldi" }; // Varsayılan "Geldi"
+                
+                let satir = document.createElement("div");
+                satir.className = "ogrenci-satir";
+                satir.innerHTML = `
+                    <div>
+                        <div class="ogrenci-isim">${ogr.isim}</div>
+                        <div class="ogrenci-id">${ogr.id}</div>
+                    </div>
+                    <div class="durum-butonlari">
+                        <button class="btn-durum secili" data-durum="Geldi" onclick="durumSec('${ogr.id}', 'Geldi', this)">Geldi</button>
+                        <button class="btn-durum" data-durum="Gelmedi" onclick="durumSec('${ogr.id}', 'Gelmedi', this)">Gelmedi</button>
+                        <button class="btn-durum" data-durum="İzinli" onclick="durumSec('${ogr.id}', 'İzinli', this)">İzinli</button>
+                        <button class="btn-durum" data-durum="Geç" onclick="durumSec('${ogr.id}', 'Geç', this)">Geç</button>
+                    </div>`;
+                liste.appendChild(satir);
+            });
+            ozetGuncelle();
+        }
+
+        function durumSec(id, durum, butonElementi) {
+            yoklamaDurumu[id].durum = durum;
+            let kardesler = butonElementi.parentElement.querySelectorAll('.btn-durum');
+            kardesler.forEach(b => b.classList.remove('secili'));
+            butonElementi.classList.add('secili');
+            ozetGuncelle();
+        }
+
+        function ozetGuncelle() {
+            document.getElementById("ozetToplam").innerText = Object.keys(yoklamaDurumu).length;
+            document.getElementById("ozetGeldi").innerText = Object.values(yoklamaDurumu).filter(d => d.durum === "Geldi" || d.durum === "Geç").length;
+            document.getElementById("ozetGelmedi").innerText = Object.values(yoklamaDurumu).filter(d => d.durum === "Gelmedi").length;
+        }
+
+        async function yoklamaKaydet() {
+            try {
+                const d = new Date(document.getElementById("yoklamaTarih").value);
+                const formatliTarih = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+                const listeVerisi = Object.keys(yoklamaDurumu).map(id => { return { "id": id, "durum": yoklamaDurumu[id].durum }; });
+                
+                const pModal = document.getElementById('progressModal');
+                const pBar = document.getElementById('progressBar');
+                const pText = document.getElementById('progressText');
+                
+                pModal.style.display = 'flex';
+                pBar.style.width = '0%';
+                pBar.style.background = 'var(--mavi)';
+                
+                const toplam = listeVerisi.length;
+                let islenen = 0;
+                pText.innerText = `0 / ${toplam} Sporcu`;
+                
+                const sayac = setInterval(() => {
+                    if (islenen < toplam - 1) {
+                        islenen++;
+                        pText.innerText = `${islenen} / ${toplam} Sporcu`;
+                        pBar.style.width = `${(islenen / toplam) * 100}%`;
+                    }
+                }, 500); // Sayaç arka planla senkronize olarak hızlandırıldı
+
+                const response = await fetch(`${API_BASE}/yoklama/kaydet`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ grup_adi: aktifGrupAdi, tarih: formatliTarih, liste: listeVerisi })
+                });
+                clearInterval(sayac);
+                
+                if(response.ok) {
+                    pBar.style.width = '100%';
+                    pBar.style.background = 'var(--geldi)';
+                    pText.innerText = `✅ Başarılı: ${toplam} / ${toplam} kaydedildi!`;
+                    setTimeout(() => { pModal.style.display = "none"; }, 2500);
+                } else {
+                    pBar.style.background = 'var(--gelmedi)';
+                    pText.innerText = "❌ Hata: Kayıt tamamlanamadı!";
+                    setTimeout(() => { pModal.style.display = "none"; }, 4000);
+                }
+            } catch(e) {
+                alert("Sistemde hata oluştu: " + e.message);
+                document.getElementById('progressModal').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
