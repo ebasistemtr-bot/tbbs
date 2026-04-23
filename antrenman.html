@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yüzme Antrenman Modülü | Havuz ve Kara</title>
+    <style>
+        /* --- MODERN LIGHT TEMA (AYDINLIK) --- */
+        :root {
+            --arkaplan: #f8fafc;
+            --kart-bg: #ffffff;
+            --kenarlik: #e2e8f0;
+            --mavi: #0284c7; 
+            --bordo: #9f1239; 
+            --metin-ana: #0f172a;
+            --metin-alt: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arkaplan);
+            color: var(--metin-ana);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- ÜST SEKME MENÜSÜ --- */
+        .sekme-menusu {
+            background-color: var(--kart-bg);
+            border-bottom: 1px solid var(--kenarlik);
+            display: flex;
+            justify-content: center;
+        padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 20;
+        gap: 15px;
+        }
+        .sekme-btn {
+        background-color: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 10px;
+        padding: 12px 30px; font-size: 16px; font-weight: bold;
+        color: var(--metin-alt); cursor: pointer; transition: all 0.2s ease;
+        }
+    .sekme-btn:hover { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); }
+    .sekme-btn.aktif { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); box-shadow: 0 4px 6px rgba(2, 132, 199, 0.1); }
+
+        /* --- MODÜL KAPSAYICI --- */
+        .modul-alani {
+            display: flex; flex: 1; overflow: hidden;
+        }
+        .gizli { display: none !important; }
+
+        /* --- SOL ALAN (PROGRAM YAZICI) --- */
+        .sol-menu {
+            width: 420px;
+            background-color: var(--kart-bg);
+            border-right: 1px solid var(--kenarlik);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+            z-index: 10;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+        }
+
+        .baslik { margin: 0 0 20px 0; font-size: 22px; color: var(--mavi); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;}
+        
+        .form-grup { margin-bottom: 15px; }
+        .form-grup label.baslik-label { display: block; margin-bottom: 5px; color: var(--metin-alt); font-size: 13px; font-weight: bold;}
+        .form-grup input[type="text"], .form-grup input[type="number"], .form-grup select {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--kenarlik);
+            background-color: #f1f5f9; color: var(--metin-ana); box-sizing: border-box; outline: none; font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        .form-grup input:focus, .form-grup select:focus { border-color: var(--mavi); background-color: #fff;}
+
+        .form-satir { display: flex; gap: 10px; }
+        .form-satir .form-grup { flex: 1; }
+
+        /* --- EKİPMAN SEÇİCİ (CHIP TASARIMI) --- */
+        .ekipman-kapsayici { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .ekipman-kutu input[type="checkbox"] { display: none; }
+        .ekipman-kutu label {
+            display: inline-block; background-color: #f8fafc; color: var(--metin-alt);
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+            border: 1px solid var(--kenarlik); transition: all 0.2s ease; user-select: none;
+        }
+        .ekipman-kutu input[type="checkbox"]:checked + label {
+            background-color: var(--mavi); color: white; border-color: var(--mavi); font-weight: bold;
+        }
+
+        .btn-ikincil {
+            background-color: #f1f5f9; color: var(--mavi); border: 1px solid var(--mavi); padding: 10px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; transition: 0.2s; margin-top: 10px;
+        }
+        .btn-ikincil:hover { background-color: var(--mavi); color: white; }
+
+        .btn-birincil {
+            background-color: var(--mavi); color: white; border: none; padding: 12px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: auto; transition: 0.2s;
+        }
+        .btn-birincil:hover { background-color: #0369a1; }
+
+        /* Aktif Program Taslağı */
+        .taslak-alani {
+            margin-top: 20px; border-top: 1px dashed var(--kenarlik); padding-top: 15px; flex-grow: 1; display: flex; flex-direction: column;
+        }
+        .taslak-liste { list-style: none; padding: 0; margin: 0 0 15px 0; flex-grow: 1; overflow-y: auto; max-height: 250px;}
+        .taslak-item {
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px; background-color: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 4px; margin-bottom: 6px; font-size: 14px;
+        }
+        .btn-sil-kucuk { background: none; border: none; color: var(--bordo); cursor: pointer; font-weight: bold;}
+        .ekipman-badge { font-size: 11px; color: var(--mavi); font-weight: 600; display: block; margin-top: 3px;}
+        .toplam-metraj-gosterge { font-size: 18px; font-weight: bold; color: var(--metin-ana); text-align: right; margin-bottom: 15px; }
+
+        /* --- SAĞ ALAN (KAYDEDİLEN PROGRAMLAR) --- */
+        .sag-alan {
+            flex: 1; display: flex; flex-direction: column; padding: 30px; background-color: var(--arkaplan); overflow-y: auto;
+        }
+        .sag-baslik { margin: 0 0 25px 0; color: var(--metin-ana); font-size: 24px;}
+        .program-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+        /* Program Kartı Modülü */
+        .program-kart {
+            background-color: var(--kart-bg); border-radius: 8px; border: 1px solid var(--kenarlik);
+            padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+            border-top: 4px solid var(--mavi);
+        }
+        .program-kart.kara-kart { border-top-color: var(--bordo); } /* Kara antrenmanı vurgu rengi */
+        
+        .pk-baslik { font-size: 18px; font-weight: bold; color: var(--metin-ana); margin-bottom: 5px;}
+        .pk-tarih { font-size: 12px; color: var(--metin-alt); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--kenarlik);}
+        .pk-setler { margin-bottom: 15px; font-size: 14px; color: var(--metin-ana); line-height: 1.6; flex-grow: 1;}
+        .pk-set-item { display: flex; flex-direction: column; margin-bottom: 8px; padding-left: 12px; position: relative;}
+        .pk-set-item::before { content: "•"; color: var(--mavi); font-weight: bold; position: absolute; left: 0; top: 0;}
+        .kara-kart .pk-set-item::before { color: var(--bordo); }
+        .pk-set-ekipman { font-size: 12px; color: var(--metin-alt); font-style: italic; }
+
+        .pk-alt { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--kenarlik); padding-top: 15px; margin-top: auto;}
+        .pk-metraj { font-weight: bold; font-size: 16px; color: var(--metin-ana); background-color: #f1f5f9; padding: 5px 10px; border-radius: 4px;}
+        .btn-sil-kart { background: none; border: none; color: var(--metin-alt); cursor: pointer; text-decoration: underline; font-size: 13px;}
+        .btn-sil-kart:hover { color: var(--bordo); }
+
+        /* MODALLAR (PENCERELER) */
+        .modal-arkaplan { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(3px);}
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sekme-menusu { flex-direction: column; }
+            .sekme-btn { width: 100%; padding: 15px; font-size: 16px; }
+            .modul-alani { flex-direction: column; overflow: visible; }
+            .sol-menu { width: 100%; border-right: none; border-bottom: 2px solid var(--kenarlik); }
+            .sag-alan { padding: 15px; overflow-y: visible; }
+            .program-grid { grid-template-columns: 1fr; }
+            .form-satir { flex-direction: column; gap: 10px; }
+            .pk-alt { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- YENİ ÜST BİLGİ VE MENÜ ÇUBUĞU -->
+    <div style="background-color: var(--kart-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); z-index: 30;">
+        <h2 style="margin: 0; color: var(--metin-ana); font-size: 22px;">Antrenman Modülü</h2>
+        <a href="index.html" style="text-decoration: none; color: var(--mavi); font-weight: bold; padding: 8px 20px; border-radius: 8px; background-color: #f0f9ff; border: 1px solid var(--mavi); transition: 0.2s;">🏠 Ana Menü</a>
+    </div>
+
+    <div class="sekme-menusu">
+        <button class="sekme-btn aktif" id="btnHavuz" onclick="sekmeDegistir('havuz')">🏊‍♂️ Havuz Antrenmanı</button>
+        <button class="sekme-btn" id="btnKara" onclick="sekmeDegistir('kara')">🏋️‍♂️ Kara Antrenmanı</button>
+    </div>
+
+    <div id="havuzModulu" class="modul-alani">
+        <div class="sol-menu">
+            <h2 class="baslik">Havuz Programı Oluştur</h2>
+            <div class="form-grup">
+                <label class="baslik-label">Program Adı</label>
+                <input type="text" id="havuzProgramAdi" placeholder="Örn: Büşra Naz - Sabah Suda">
+            </div>
+
+            <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid var(--kenarlik);">
+                <div class="form-satir">
+                    <div class="form-grup" style="flex: 0.4;">
+                        <label class="baslik-label">Tekrar</label>
+                        <input type="number" id="setTekrar" value="1" min="1">
+                    </div>
+                    <div class="form-grup" style="flex: 0.6;">
+                        <label class="baslik-label">Mesafe (m)</label>
+                        <input type="number" id="setMesafe" value="100" step="25" min="25">
+                    </div>
+                </div>
+
+                <div class="form-grup">
+                    <label class="baslik-label">Stil / Açıklama</label>
+                    <select id="setStil">
+                        <option value="Serbest">Serbest</option>
+                        <option value="Sırtüstü">Sırtüstü</option>
+                        <option value="Kurbağalama">Kurbağalama</option>
+                        <option value="Kelebek">Kelebek</option>
+                        <option value="Karışık">Karışık</option>
+                        <option value="Ayak">Ayak Vuruşu</option>
+                        <option value="Teknik">Teknik</option>
+                    </select>
+                </div>
+
+                <div class="form-grup">
+                    <label class="baslik-label">Ekipmanlar (İsteğe Bağlı)</label>
+                    <div class="ekipman-kapsayici" id="ekipmanAlani">
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_pullbuoy" value="Pullbuoy">
+                            <label for="eq_pullbuoy">Pullbuoy</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_palet" value="Palet">
+                            <label for="eq_palet">Palet</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_elpaleti" value="El Paleti">
+                            <label for="eq_elpaleti">El Paleti</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_snokel" value="Şnorkel">
+                            <label for="eq_snokel">Şnorkel</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_tahta" value="Tahta">
+                            <label for="eq_tahta">Tahta</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_bardak" value="Bardak">
+                            <label for="eq_bardak">Bardak</label>
+                        </div>
+                        <div class="ekipman-kutu">
+                            <input type="checkbox" id="eq_parasut" value="Paraşüt">
+                            <label for="eq_parasut">Paraşüt</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-ikincil" onclick="havuzTaslagaSetEkle()">+ Seti Ekle</button>
+            </div>
+
+            <div class="taslak-alani">
+                <label class="baslik-label" style="margin-bottom: 10px;">Program İçeriği:</label>
+                <ul class="taslak-liste" id="havuzTaslakListe">
+                    <li style="color: var(--metin-alt); font-size: 13px; text-align: center; margin-top: 20px;">Henüz set eklenmedi.</li>
+                </ul>
+                <div class="toplam-metraj-gosterge">
+                    Toplam: <span id="taslakMetraj">0</span> m
+                </div>
+            </div>
+
+            <button class="btn-birincil" onclick="havuzProgramiKaydet()">💾 Havuz Programını Kaydet</button>
+        </div>
+
+        <div class="sag-alan">
+            <h1 class="sag-baslik">Havuz Antrenman Modülleri</h1>
+            <div class="program-grid" id="havuzProgramGrid"></div>
+        </div>
+    </div>
+
+
+    <div id="karaModulu" class="modul-alani gizli">
+        <div class="sol-menu" style="border-right-color: #fca5a5;">
+            <h2 class="baslik" style="color: var(--bordo);">Kara Programı Oluştur</h2>
+            <div class="form-grup">
+                <label class="baslik-label">Program Adı</label>
+                <input type="text" id="karaProgramAdi" placeholder="Örn: Core ve Kuvvet">
+            </div>
+
+            <div style="background-color: #fef2f2; padding: 15px; border-radius: 8px; border: 1px solid #fca5a5;">
+                <div class="form-grup">
+                    <label class="baslik-label">Egzersiz</label>
+                    <select id="karaEgzersiz">
+                        <option value="Direnç Lastiği Çekiş">Direnç Lastiği Çekiş</option>
+                        <option value="Plank">Plank</option>
+                        <option value="Şınav (Push-up)">Şınav (Push-up)</option>
+                        <option value="Mekik (Crunch)">Mekik (Crunch)</option>
+                        <option value="Russian Twist">Russian Twist</option>
+                        <option value="Squat">Squat</option>
+                        <option value="Burpee">Burpee</option>
+                        <option value="Barfiks">Barfiks</option>
+                        <option value="Esneklik / Stretching">Esneklik / Stretching</option>
+                    </select>
+                </div>
+
+                <div class="form-satir">
+                    <div class="form-grup">
+                        <label class="baslik-label">Set</label>
+                        <input type="number" id="karaSet" value="3" min="1">
+                    </div>
+                    <div class="form-grup">
+                        <label class="baslik-label">Tekrar veya Süre</label>
+                        <input type="text" id="karaTekrar" placeholder="Örn: 15 veya 45 sn">
+                    </div>
+                </div>
+
+                <button class="btn-ikincil" style="color: var(--bordo); border-color: var(--bordo);" onclick="karaTaslagaEkle()">+ Egzersizi Ekle</button>
+            </div>
+
+            <div class="taslak-alani">
+                <label class="baslik-label" style="margin-bottom: 10px;">Program İçeriği:</label>
+                <ul class="taslak-liste" id="karaTaslakListe">
+                    <li style="color: var(--metin-alt); font-size: 13px; text-align: center; margin-top: 20px;">Henüz egzersiz eklenmedi.</li>
+                </ul>
+            </div>
+
+            <button class="btn-birincil" style="background-color: var(--bordo);" onmouseover="this.style.backgroundColor='#7f1d1d'" onmouseout="this.style.backgroundColor='var(--bordo)'" onclick="karaProgramiKaydet()">💾 Kara Programını Kaydet</button>
+        </div>
+
+        <div class="sag-alan">
+            <h1 class="sag-baslik">Kara Antrenman Modülleri</h1>
+            <div class="program-grid" id="karaProgramGrid"></div>
+        </div>
+    </div>
+
+    <!-- ATAMA MODALI (Gruplara Atama Yapmak İçin) -->
+    <div id="atamaModal" class="modal-arkaplan">
+        <div style="background:var(--kart-bg); padding:25px; border-radius:12px; width:400px; max-width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0; color:var(--mavi); border-bottom:1px solid var(--kenarlik); padding-bottom:10px;">Antrenman Ata</h3>
+            <p style="font-weight:bold; margin-bottom:15px; color:var(--metin-ana);" id="ataProgramAdi">-</p>
+            
+            <div class="form-grup">
+                <label class="baslik-label">Tarih Seçiniz:</label>
+                <input type="date" id="ataTarih">
+            </div>
+            
+            <div class="form-grup">
+                <label class="baslik-label">Hedef Grup veya Sporcu:</label>
+                <select id="ataGrupSecici"><option value="">Yükleniyor...</option></select>
+            </div>
+            
+            <div id="atamaMesaj" style="display:none; padding:10px; margin-bottom:10px; border-radius:5px; font-weight:bold; text-align:center;"></div>
+            
+            <button class="btn-birincil" style="width:100%; margin-bottom:10px;" id="btnTopluAta" onclick="topluAtamaYap()">✅ Seçili Gruba Ata</button>
+            <button class="btn-ikincil" style="width:100%; margin-top:0;" onclick="document.getElementById('atamaModal').style.display='none'">İptal</button>
+        </div>
+    </div>
+
+    <!-- İLERLEME (PROGRESS) MODALI -->
+    <div id="progressModal" class="modal-arkaplan" style="z-index: 2000;">
+        <div style="background:var(--kart-bg); padding:30px; border-radius:15px; width:400px; max-width:90%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
+            <h2 style="margin: 0 0 10px 0; color: var(--mavi);">Kayıtlar İşleniyor</h2>
+            <p style="color: var(--metin-alt); font-size: 14px; margin-bottom: 20px;">Lütfen sekmeyi kapatmayın, API kotasına uygun şekilde güvenli kayıt yapılıyor...</p>
+            
+            <div style="background: #e2e8f0; border-radius: 10px; height: 22px; width: 100%; overflow: hidden; margin-bottom: 15px;">
+                <div id="progressBar" style="background: var(--mavi); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+            </div>
+            
+            <strong id="progressText" style="font-size: 20px; color: var(--metin-ana);">0 / 0 Sporcu</strong>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+
+        // --- SEKME KONTROLÜ ---
+        function sekmeDegistir(sekmeAdi) {
+            // Butonları ayarla
+            document.getElementById("btnHavuz").classList.remove("aktif");
+            document.getElementById("btnKara").classList.remove("aktif");
+            
+            // Modülleri gizle
+            document.getElementById("havuzModulu").classList.add("gizli");
+            document.getElementById("karaModulu").classList.add("gizli");
+
+            if(sekmeAdi === 'havuz') {
+                document.getElementById("btnHavuz").classList.add("aktif");
+                document.getElementById("havuzModulu").classList.remove("gizli");
+            } else {
+                document.getElementById("btnKara").classList.add("aktif");
+                document.getElementById("karaModulu").classList.remove("gizli");
+            }
+        }
+
+        // --- HAVUZ MODÜLÜ JS ---
+        let havuzTaslakSetler = []; 
+
+        function havuzTaslagaSetEkle() {
+            const tekrar = parseInt(document.getElementById("setTekrar").value) || 1;
+            const mesafe = parseInt(document.getElementById("setMesafe").value) || 0;
+            const stil = document.getElementById("setStil").value;
+            const seciliEkipmanlar = Array.from(document.querySelectorAll('#ekipmanAlani input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            if (mesafe <= 0) return alert("Geçerli bir mesafe girin.");
+
+            const yeniSet = { id: Date.now(), tekrar, mesafe, stil, ekipmanlar: seciliEkipmanlar, toplamM: tekrar * mesafe };
+            havuzTaslakSetler.push(yeniSet);
+            havuzTaslakGuncelle();
+            
+            document.getElementById("setTekrar").value = "1";
+            document.querySelectorAll('#ekipmanAlani input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
+        }
+
+        function havuzTaslaktanSil(id) {
+            havuzTaslakSetler = havuzTaslakSetler.filter(s => s.id !== id);
+            havuzTaslakGuncelle();
+        }
+
+        function havuzTaslakGuncelle() {
+            const liste = document.getElementById("havuzTaslakListe");
+            const metrajGosterge = document.getElementById("taslakMetraj");
+            let toplamM = 0;
+            liste.innerHTML = "";
+
+            if (havuzTaslakSetler.length === 0) {
+                liste.innerHTML = '<li style="color: var(--metin-alt); font-size: 13px; text-align: center; margin-top: 20px;">Henüz set eklenmedi.</li>';
+                metrajGosterge.innerText = "0"; return;
+            }
+
+            havuzTaslakSetler.forEach(set => {
+                toplamM += set.toplamM;
+                const li = document.createElement("li");
+                li.className = "taslak-item";
+                const setMetni = set.tekrar > 1 ? `${set.tekrar} x ${set.mesafe}m ${set.stil}` : `${set.mesafe}m ${set.stil}`;
+                const ekipmanBadge = set.ekipmanlar.length > 0 ? `<span class="ekipman-badge">[ ${set.ekipmanlar.join(', ')} ]</span>` : "";
+                
+                li.innerHTML = `<div><span>${setMetni}</span>${ekipmanBadge}</div><button class="btn-sil-kucuk" onclick="havuzTaslaktanSil(${set.id})">X</button>`;
+                liste.appendChild(li);
+            });
+            metrajGosterge.innerText = toplamM;
+        }
+
+        async function havuzProgramiKaydet() {
+            const programAdi = document.getElementById("havuzProgramAdi").value.trim();
+            if (havuzTaslakSetler.length === 0) return alert("Programa en az bir set eklemelisiniz!");
+            if (programAdi === "") return alert("Lütfen programa bir isim verin.");
+
+            const payload = {
+                program_adi: programAdi,
+                tip: "Havuz",
+                setler_json: JSON.stringify(havuzTaslakSetler)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/antrenman/modul/kaydet`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (res.ok) {
+                    havuzTaslakSetler = []; document.getElementById("havuzProgramAdi").value = "";
+                    havuzTaslakGuncelle(); kayitliProgramlariYukle();
+                } else { alert("Hata: " + (data.detail || "Bilinmeyen hata.")); }
+            } catch (e) { alert("API bağlantı hatası!"); }
+        }
+
+        async function havuzProgramSil(id) {
+            if(confirm("Bu havuz programını silmek istediğinize emin misiniz?")) {
+                try {
+                    const res = await fetch(`${API_BASE}/antrenman/modul/sil`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ program_id: id }) });
+                    const data = await res.json();
+                    if (res.ok) { kayitliProgramlariYukle(); } 
+                    else { alert("Hata: " + (data.detail || "Silme işlemi başarısız.")); }
+                } catch (e) { alert("API bağlantı hatası!"); }
+            }
+        }
+
+        function havuzGridGuncelle(programlar) {
+            const grid = document.getElementById("havuzProgramGrid");
+            grid.innerHTML = "";
+            if (!programlar || programlar.length === 0) {
+                grid.innerHTML = '<div style="color: var(--metin-alt);">Henüz program oluşturmadınız.</div>'; return;
+            }
+
+            [...programlar].reverse().forEach(prog => {
+                const kart = document.createElement("div"); kart.className = "program-kart";
+                
+                // Veri çekme güvenliği eklendi (Google API sütun isimlerine karşı)
+                const pId = prog.ProgramID || prog.program_id || prog.id;
+                const pAdi = prog.ProgramAdi || prog.program_adi || prog.isim;
+                const pTarih = prog.Tarih || prog.tarih;
+                const pSetler = prog.SetlerJSON || prog.setler_json || "[]";
+
+                let setler;
+                try {
+                    setler = JSON.parse(pSetler);
+                } catch(e) {
+                    console.error("JSON parse hatası:", pSetler);
+                    return; // Hatalı veriyi atla
+                }
+
+                const toplamMetraj = setler.reduce((toplam, set) => toplam + (set.toplamM || 0), 0);
+
+                let setlerHTML = setler.map(set => {
+                    let metin = set.tekrar > 1 ? `${set.tekrar} x ${set.mesafe}m ${set.stil}` : `${set.mesafe}m ${set.stil}`;
+                    let ekipmanMetni = set.ekipmanlar.length > 0 ? `<div class="pk-set-ekipman">+ ${set.ekipmanlar.join(', ')}</div>` : "";
+                    return `<div class="pk-set-item"><div>${metin}</div>${ekipmanMetni}</div>`;
+                }).join('');
+
+                kart.innerHTML = `
+                    <div class="pk-baslik" style="color: var(--mavi);">${pAdi}</div>
+                    <div class="pk-tarih">${pTarih}</div>
+                    <div class="pk-setler">${setlerHTML}</div>
+                    <div class="pk-alt">
+                        <button class="btn-sil-kart" style="color:var(--mavi); font-weight:bold; margin-right:15px; text-decoration:none;" onclick="atamaModalAc('${pId}', '${pAdi.replace(/'/g, "\\'")}', 'Havuz', '${encodeURIComponent(pSetler)}')">🚀 Spora Ata</button>
+                        <button class="btn-sil-kart" onclick="havuzProgramSil('${pId}')">Sil</button>
+                        <div class="pk-metraj">Toplam: ${toplamMetraj}m</div>
+                    </div>`;
+                grid.appendChild(kart);
+            });
+        }
+
+        // --- KARA MODÜLÜ JS ---
+        let karaTaslakEgzersizler = [];
+        
+        function karaTaslagaEkle() {
+            const egzersiz = document.getElementById("karaEgzersiz").value;
+            const setSayisi = document.getElementById("karaSet").value;
+            const tekrarSuresi = document.getElementById("karaTekrar").value.trim();
+
+            if (tekrarSuresi === "") return alert("Lütfen bir tekrar sayısı veya süre girin (Örn: 15 veya 30 sn).");
+
+            const yeniEgzersiz = { id: Date.now(), egzersiz, setSayisi, tekrarSuresi };
+            karaTaslakEgzersizler.push(yeniEgzersiz);
+            karaTaslakGuncelle();
+            
+            document.getElementById("karaTekrar").value = ""; // Formu temizle
+        }
+
+        function karaTaslaktanSil(id) {
+            karaTaslakEgzersizler = karaTaslakEgzersizler.filter(e => e.id !== id);
+            karaTaslakGuncelle();
+        }
+
+        function karaTaslakGuncelle() {
+            const liste = document.getElementById("karaTaslakListe");
+            liste.innerHTML = "";
+
+            if (karaTaslakEgzersizler.length === 0) {
+                liste.innerHTML = '<li style="color: var(--metin-alt); font-size: 13px; text-align: center; margin-top: 20px;">Henüz egzersiz eklenmedi.</li>';
+                return;
+            }
+
+            karaTaslakEgzersizler.forEach(egz => {
+                const li = document.createElement("li"); li.className = "taslak-item";
+                li.innerHTML = `<div><strong style="color:var(--metin-ana);">${egz.egzersiz}</strong> <br><span style="color:var(--metin-alt); font-size:12px;">${egz.setSayisi} Set x ${egz.tekrarSuresi}</span></div><button class="btn-sil-kucuk" onclick="karaTaslaktanSil(${egz.id})">X</button>`;
+                liste.appendChild(li);
+            });
+        }
+
+        async function karaProgramiKaydet() {
+            const programAdi = document.getElementById("karaProgramAdi").value.trim();
+            if (karaTaslakEgzersizler.length === 0) return alert("Programa en az bir egzersiz eklemelisiniz!");
+            if (programAdi === "") return alert("Lütfen programa bir isim verin.");
+            
+            const payload = {
+                program_adi: programAdi,
+                tip: "Kara",
+                setler_json: JSON.stringify(karaTaslakEgzersizler)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/antrenman/modul/kaydet`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (res.ok) {
+                    karaTaslakEgzersizler = []; document.getElementById("karaProgramAdi").value = "";
+                    karaTaslakGuncelle(); kayitliProgramlariYukle();
+                } else { alert("Hata: " + (data.detail || "Bilinmeyen hata.")); }
+            } catch (e) { alert("API bağlantı hatası!"); }
+        }
+
+        async function karaProgramSil(id) {
+            if(confirm("Bu kara programını silmek istediğinize emin misiniz?")) {
+                try {
+                    const res = await fetch(`${API_BASE}/antrenman/modul/sil`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ program_id: id }) });
+                    const data = await res.json();
+                    if (res.ok) { kayitliProgramlariYukle(); } 
+                    else { alert("Hata: " + (data.detail || "Silme işlemi başarısız.")); }
+                } catch (e) { alert("API bağlantı hatası!"); }
+            }
+        }
+
+        function karaGridGuncelle(programlar) {
+            const grid = document.getElementById("karaProgramGrid");
+            grid.innerHTML = "";
+            if (!programlar || programlar.length === 0) {
+                grid.innerHTML = '<div style="color: var(--metin-alt);">Henüz program oluşturmadınız.</div>'; return;
+            }
+
+            [...programlar].reverse().forEach(prog => {
+                const kart = document.createElement("div"); 
+                kart.className = "program-kart kara-kart"; // Bordo üst çizgi için class
+                
+                const pId = prog.ProgramID || prog.program_id || prog.id;
+                const pAdi = prog.ProgramAdi || prog.program_adi || prog.isim;
+                const pTarih = prog.Tarih || prog.tarih;
+                const pSetler = prog.SetlerJSON || prog.setler_json || "[]";
+                let egzersizler;
+                try {
+                    egzersizler = JSON.parse(pSetler);
+                } catch(e) { return; }
+
+                const hareketSayisi = egzersizler.length;
+
+                let egzersizlerHTML = egzersizler.map(egz => {
+                    return `<div class="pk-set-item"><div><b>${egz.egzersiz}</b> <span style="color:var(--metin-alt); font-size:12px;">(${egz.setSayisi}x${egz.tekrarSuresi})</span></div></div>`;
+                }).join('');
+
+                kart.innerHTML = `
+                    <div class="pk-baslik" style="color: var(--bordo);">${pAdi}</div>
+                    <div class="pk-tarih">${pTarih}</div>
+                    <div class="pk-setler">${egzersizlerHTML}</div>
+                    <div class="pk-alt">
+                        <button class="btn-sil-kart" style="color:var(--bordo); font-weight:bold; margin-right:15px; text-decoration:none;" onclick="atamaModalAc('${pId}', '${pAdi.replace(/'/g, "\\'")}', 'Kara', '${encodeURIComponent(pSetler)}')">🚀 Spora Ata</button>
+                        <button class="btn-sil-kart" onclick="karaProgramSil('${pId}')">Sil</button>
+                        <div class="pk-metraj" style="background-color: #fef2f2; color: var(--bordo);">${hareketSayisi} Hareket</div>
+                    </div>`;
+                grid.appendChild(kart);
+            });
+        }
+
+        async function kayitliProgramlariYukle() {
+            try {
+                const res = await fetch(`${API_BASE}/antrenman/moduller`);
+                const data = await res.json();
+                if (data.moduller) {
+                    const havuzProgramlar = data.moduller.filter(m => (m.Tip || m.tip) === 'Havuz');
+                    const karaProgramlar = data.moduller.filter(m => (m.Tip || m.tip) === 'Kara');
+                    havuzGridGuncelle(havuzProgramlar);
+                    karaGridGuncelle(karaProgramlar);
+                }
+            } catch (e) {
+                document.getElementById("havuzProgramGrid").innerHTML = '<div style="color: var(--bordo);">API bağlantı hatası!</div>';
+                document.getElementById("karaProgramGrid").innerHTML = '<div style="color: var(--bordo);">API bağlantı hatası!</div>';
+            }
+        }
+
+        // --- TOPLU ATAMA FONKSİYONLARI ---
+        let tumSporcularAtama = {};
+        let seciliModulAtama = null;
+
+        async function baslangicAyarlari() {
+            kayitliProgramlariYukle();
+            document.getElementById('ataTarih').valueAsDate = new Date();
+            try {
+                const res = await fetch(`${API_BASE}/sporcular`); const data = await res.json();
+                if (data.sporcular) {
+                    tumSporcularAtama = data.sporcular;
+                    let takimlar = new Set();
+                    Object.values(tumSporcularAtama).forEach(s => takimlar.add(String(s.takim_grubu || "Diğer").trim()));
+                    
+                    let optionsHtml = '<option value="Tümü">🌍 Tüm Kulüp Sporcuları</option>';
+                    optionsHtml += '<optgroup label="Takımlar / Gruplar">';
+                    [...takimlar].sort().forEach(t => { optionsHtml += `<option value="GRUP_${t}">👥 Grup: ${t}</option>`; });
+                    optionsHtml += '</optgroup><optgroup label="Bireysel Sporcular">';
+                    Object.entries(tumSporcularAtama).sort((a,b) => a[1].isim.localeCompare(b[1].isim)).forEach(([id, s]) => {
+                        optionsHtml += `<option value="TEK_${id}">👤 ${s.isim}</option>`;
+                    });
+                    optionsHtml += '</optgroup>';
+                    document.getElementById('ataGrupSecici').innerHTML = optionsHtml;
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        function atamaModalAc(id, isim, tip, setlerURI) {
+            seciliModulAtama = { id, adi: isim, tip: tip, setler: JSON.parse(decodeURIComponent(setlerURI)) };
+            document.getElementById('ataProgramAdi').innerText = `${isim} (${tip})`;
+            document.getElementById('atamaMesaj').style.display = 'none';
+            document.getElementById('atamaModal').style.display = 'flex';
+        }
+
+        async function topluAtamaYap() {
+            try {
+                const secim = document.getElementById('ataGrupSecici').value;
+                const tarih = document.getElementById('ataTarih').value;
+                
+                let hedefler = [];
+                if (secim === "Tümü") {
+                    hedefler = Object.keys(tumSporcularAtama);
+                } else if (secim.startsWith("GRUP_")) {
+                    const grupAdi = secim.substring(5);
+                    hedefler = Object.keys(tumSporcularAtama).filter(id => String(tumSporcularAtama[id].takim_grubu || "Diğer").trim() === grupAdi);
+                } else if (secim.startsWith("TEK_")) {
+                    hedefler.push(secim.substring(4));
+                }
+                
+                if (hedefler.length === 0) return alert("Seçili grupta sporcu bulunamadı.");
+                
+                const d = new Date(tarih);
+                const formatliTarih = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+                
+                let miktar = seciliModulAtama.tip === 'Havuz' 
+                    ? (seciliModulAtama.setler.reduce((sum, set) => sum + (set.toplamM || 0), 0) + "m")
+                    : (seciliModulAtama.setler.length + " hareket");
+                
+                const payload = {
+                    sporcu_idler: hedefler, tarih: formatliTarih, program_adi: seciliModulAtama.adi,
+                    tip: seciliModulAtama.tip, detay_json: JSON.stringify(seciliModulAtama.setler), metraj_veya_hareket: miktar
+                };
+                
+                // Ekranda Şık Dolum Barını (Progress) Aç
+                document.getElementById('atamaModal').style.display = 'none';
+                const pModal = document.getElementById('progressModal');
+                const pBar = document.getElementById('progressBar');
+                const pText = document.getElementById('progressText');
+                
+                pModal.style.display = 'flex';
+                pBar.style.width = '0%';
+                pBar.style.background = 'var(--mavi)';
+                
+                const toplam = hedefler.length;
+                let islenen = 0;
+                pText.innerText = `0 / ${toplam} Sporcu`;
+                
+                const sayac = setInterval(() => {
+                    if (islenen < toplam - 1) {
+                        islenen++;
+                        pText.innerText = `${islenen} / ${toplam} Sporcu`;
+                        pBar.style.width = `${(islenen / toplam) * 100}%`;
+                    }
+                }, 500); // Sayaç arka planla senkronize olarak hızlandırıldı
+                
+                const res = await fetch(`${API_BASE}/antrenman/toplu_ata`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                
+                clearInterval(sayac);
+                
+                if(res.ok) {
+                    pBar.style.width = '100%';
+                    pBar.style.background = '#10b981';
+                    pText.innerText = `✅ İşlem Tamamlandı: ${toplam} / ${toplam}`; 
+                    setTimeout(() => { pModal.style.display='none'; }, 2500);
+                } else {
+                    pBar.style.background = '#ef4444';
+                    pText.innerText = "❌ Hata: " + (data.detail || "Bağlantı sorunu"); 
+                    setTimeout(() => { pModal.style.display='none'; }, 4000);
+                }
+            } catch(e) {
+                alert("Hata oluştu, işlem başlatılamadı: " + e.message);
+                document.getElementById('progressModal').style.display = 'none';
+            }
+        }
+        window.onload = baslangicAyarlari;
+    </script>
+</body>
+</html>
