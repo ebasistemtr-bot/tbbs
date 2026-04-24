@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabzon Büyükşehir Belediye Spor Kulübü | Sistem</title>
+    <style>
+        /* --- BEYAZ / AYDINLIK TEMA (LIGHT MODE) --- */
+        :root {
+            --arkaplan: #f0f2f5; 
+            --kart-bg: #ffffff; 
+            --bordo: #9f1239; 
+            --mavi: #0284c7; 
+            --metin-ana: #1e293b; 
+            --metin-alt: #64748b; 
+            --kenarlik: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arkaplan);
+            color: var(--metin-ana);
+            margin: 0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .baslik-alani {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .baslik-alani h1 {
+            color: var(--bordo);
+            font-size: 34px;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .baslik-alani p {
+            color: var(--metin-alt);
+            font-size: 16px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .modul-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+
+        .modul-kart {
+            background-color: var(--kart-bg);
+            border: 1px solid var(--kenarlik);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--metin-ana);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .modul-kart:hover {
+            transform: translateY(-8px);
+            border-color: var(--mavi);
+            box-shadow: 0 12px 20px rgba(2, 132, 199, 0.1);
+        }
+
+        .modul-ikon {
+            font-size: 40px;
+            margin-bottom: 5px;
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .modul-icerik {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modul-baslik {
+            color: var(--mavi);
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+
+        .modul-aciklama {
+            color: var(--metin-alt);
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { padding: 20px 15px; }
+            .baslik-alani h1 { font-size: 26px; }
+            .baslik-alani p { font-size: 14px; }
+            .modul-grid { gap: 15px; }
+            .modul-kart { 
+                aspect-ratio: auto; 
+                flex-direction: row; 
+                padding: 20px 15px; 
+                text-align: left;
+            }
+            .modul-ikon { font-size: 32px; padding: 12px; margin-bottom: 0; }
+            .modul-icerik { align-items: flex-start; }
+            .modul-baslik { text-align: left; font-size: 18px; margin: 0 0 5px 0; }
+            .modul-aciklama { text-align: left; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="baslik-alani">
+        <h1>Trabzon Büyükşehir Belediye Spor Kulübü</h1>
+        <p>Kulüp İşletim Sistemi (v3.0)</p>
+    </div>
+
+    <div class="modul-grid">
+        <a href="sporcu_yonetim.html" class="modul-kart">
+            <div class="modul-ikon">👥</div>
+            <div class="modul-icerik">
+                <h2 class="modul-baslik">Sporcu Yönetimi</h2>
+                <p class="modul-aciklama">Sporcu profilleri, CRM bilgileri, yarış geçmişleri ve performans ivmeleri.</p>
+            </div>
+        </a>
+
+        <a href="yoklama.html" class="modul-kart">
+            <div class="modul-ikon">✅</div>
+            <div class="modul-icerik">
+                <h2 class="modul-baslik">Devam Durumu</h2>
+                <p class="modul-aciklama">Havuz kenarı şimşek hızında yoklama sistemi ve günlük katılım takibi.</p>
+            </div>
+        </a>
+
+        <a href="antrenor.html" class="modul-kart">
+            <div class="modul-ikon">👨‍🏫</div>
+            <div class="modul-icerik">
+                <h2 class="modul-baslik">Antrenör Listesi</h2>
+                <p class="modul-aciklama">Kulüp antrenörleri, görev dağılımları ve yetki yönetim paneli.</p>
+            </div>
+        </a>
+
+        <a href="antrenman.html" class="modul-kart">
+            <div class="modul-ikon">🏊‍♂️🏋️‍♂️</div>
+            <div class="modul-icerik">
+                <h2 class="modul-baslik">Antrenman Modülü</h2>
+                <p class="modul-aciklama">Havuz ve kara programları oluştur, modülleri kaydet ve sporculara ata.</p>
+            </div>
+        </a>
+        
+        <a href="gyaris.html" class="modul-kart">
+            <div class="modul-ikon">🗓️</div>
+            <div class="modul-icerik">
+                <h2 class="modul-baslik">Gelecek Yarışlar</h2>
+                <p class="modul-aciklama">Sporcuların yaklaşan yarış programları ve antrenör hedefleri.</p>
+            </div>
+        </a>
+    </div>
+
+</body>
+</html>
