@@ -85,7 +85,7 @@
         .ds-sag { font-weight: bold; color: var(--bordo); font-size: 16px; display: flex; align-items: center;}
 
         /* MODALLAR (PENCERELER) */
-        .modal-arkaplan { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(3px);}
+        .modal-arkaplan { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);}
         .modal-kutu { background-color: var(--arkaplan); width: 700px; max-width: 95%; max-height: 90vh; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .modal-ust { background-color: var(--kart-bg); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); }
         .modal-ust h3 { margin: 0; color: var(--bordo); }
@@ -118,6 +118,7 @@
         /* MOBİL İÇİN ÖZEL ELEMANLAR */
         .mobil-kapat-btn { display: none; width: 100%; background-color: #f1f5f9; color: var(--metin-ana); padding: 15px; border: 1px solid var(--kenarlik); border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; font-size: 16px; text-align: center; transition: 0.2s;}
         .mobil-kapat-btn:hover { background-color: #e2e8f0; }
+        .mobil-buton-grubu { display: none; gap: 15px; margin-bottom: 20px; }
         .mobil-tumu-kart { display: none; background-color: #f0f9ff; border-top: 4px solid var(--mavi); margin-bottom: 20px; text-align: center; cursor: pointer; padding: 20px; border-radius: 12px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
         .mobil-tumu-kart h2 { margin: 0 0 5px 0; color: var(--mavi); font-size: 20px;}
         .mobil-tumu-kart p { margin: 0; color: var(--metin-alt); font-size: 13px;}
@@ -128,7 +129,8 @@
             .sol-menu { display: none; }
             .sol-menu.mobil-acik { display: flex !important; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; max-height: 100vh; z-index: 999; border-right: none; border-bottom: none; }
             .mobil-kapat-btn { display: block; }
-            .mobil-tumu-kart { display: block; }
+            .mobil-buton-grubu { display: flex; }
+            .mobil-tumu-kart { display: flex; flex-direction: column; justify-content: center; flex: 1; margin-bottom: 0; padding: 15px 10px; }
             .sag-alan { padding: 15px; overflow-y: visible; }
             .profil-icerik { flex-direction: column; }
             .grafik-kutu, .liste-kutu { min-width: 100%; width: 100%; box-sizing: border-box; flex: none; }
@@ -152,7 +154,7 @@
         <button class="mobil-kapat-btn" onclick="mobilMenuKapat()">⬅ Panoya Dön</button>
         <div class="baslik-alan">
             <h2>Kulüp Rehberi</h2>
-            <a href="index.html" class="btn-ana">🏠 Menü</a>
+            <a href="menu.html" class="btn-ana">🏠 Menü</a>
         </div>
         <input type="text" id="aramaKutusu" class="arama-kutusu" placeholder="Sporcu ara..." onkeyup="listeFiltrele()">
         <button class="btn-ekle" onclick="yeniSporcuModali()">+ Yeni Kayıt / Profil</button>
@@ -163,11 +165,17 @@
         <div id="gorunumDashboard" style="display: block;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); padding-bottom: 10px; margin-bottom: 15px;">
                 <h2 style="color: var(--metin-alt); margin: 0;">Takımlar & Gruplar</h2>
-                <a href="index.html" class="btn-ana">🏠 Menü</a>
+                <a href="menu.html" class="btn-ana">🏠 Menü</a>
             </div>
-            <div class="mobil-tumu-kart" onclick="mobilMenuAc()">
-                <h2>🌍 Tüm Sporcular & Arama</h2>
-                <p>Sporcu Ara, Listeyi Gör veya Yeni Kayıt Ekle</p>
+            <div class="mobil-buton-grubu">
+                <div class="mobil-tumu-kart" onclick="mobilMenuAc()">
+                    <h2 style="font-size: 16px;">🌍 Tüm Sporcular</h2>
+                    <p>Arama ve Liste</p>
+                </div>
+                <div class="mobil-tumu-kart" onclick="yeniSporcuModali()" style="background-color: #fff1f2; border-top-color: var(--bordo);">
+                    <h2 style="color: var(--bordo); font-size: 16px;">➕ Yeni Kayıt</h2>
+                    <p>Sporcu Ekle</p>
+                </div>
             </div>
             <div class="yas-grid" id="yasGridAlani"></div>
         </div>
@@ -175,7 +183,7 @@
         <div id="gorunumGrup" style="display: none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
                 <button class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumDashboard')">⬅ Takımlara Dön</button>
-                <a href="index.html" class="btn-ana">🏠 Menü</a>
+                <a href="menu.html" class="btn-ana">🏠 Menü</a>
             </div>
             <h2 id="grupBaslik" style="color: var(--bordo); margin-top: 0;">Takım Sporcuları</h2>
             <div class="sporcu-grid" id="grupSporcuGrid"></div>
@@ -184,7 +192,7 @@
         <div id="gorunumProfil" style="display: none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
                 <button class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumGrup')">⬅ Listeye Dön</button>
-                <a href="index.html" class="btn-ana">🏠 Menü</a>
+                <a href="menu.html" class="btn-ana">🏠 Menü</a>
             </div>
             <div class="profil-header">
                 <div class="profil-isim">
@@ -573,6 +581,7 @@
         function modalKapat(modalId) { document.getElementById(modalId).style.display = "none"; guncellemeModu = false; }
         
         function yeniSporcuModali() { 
+            mobilMenuKapat();
             aktifSporcuID = null; 
             document.getElementById("modalBaslik").innerText = "Yeni Sporcu Kaydı"; 
             ['editAd','editTarih','editTC','editTakim','editVeliAd','editVeliTel','editVeli2Ad','editVeli2Tel','editKan','editSaglik'].forEach(id => document.getElementById(id).value = "");
@@ -622,9 +631,11 @@
         }
 
         async function profilKaydet() {
+            const yeniKayitMi = !aktifSporcuID;
+            const adSoyad = document.getElementById("editAd").value;
             const payload = { 
                 sporcu_id: aktifSporcuID, 
-                ad_soyad: document.getElementById("editAd").value, 
+                ad_soyad: adSoyad, 
                 cinsiyet: document.getElementById("editCinsiyet").value, 
                 tc_kimlik: document.getElementById("editTC").value, 
                 dogum_tarihi: document.getElementById("editTarih").value, 
@@ -639,7 +650,23 @@
                 saglik_durumu: document.getElementById("editSaglik").value, 
                 servis_kullanimi: "-" 
             };
-            try { await fetch(`${API_BASE}/sporcu/kaydet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }); window.location.reload(); } catch(e) { alert("Hata!"); }
+            
+            try { 
+                const res = await fetch(`${API_BASE}/sporcu/kaydet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }); 
+                const data = await res.json();
+                
+                if (yeniKayitMi && confirm("Sporcu başarıyla kaydedildi!\n\nSporcunun yarış geçmişi Trabzon Yüzme sisteminden otomatik olarak çekilsin mi?\n(Bu işlem arka planda birkaç dakika sürebilir)")) {
+                    try {
+                        await fetch(`${API_BASE}/sporcu/yaris_cek_tetikle`, {
+                            method: 'POST', headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ sporcu_id: data.id, ad_soyad: adSoyad })
+                        });
+                        alert("✅ Sporcu verileri indiriliyor.\nBirkaç dakika sonra sporcu sayfasına girerek yarış geçmişini kontrol edebilirsiniz.");
+                    } catch(e) { console.error("Veri çekme tetiklenemedi!"); }
+                }
+                
+                window.location.reload(); 
+            } catch(e) { alert("Hata!"); }
         }
 
         async function guncelleDurum(yeniDurum) {

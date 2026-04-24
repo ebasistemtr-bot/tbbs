@@ -33,9 +33,13 @@
         .logo-img {
             max-width: 180px;
             margin-bottom: 20px;
-            border-radius: 15px; /* Eğer logon kareyse köşeleri yumuşatır */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            /* Beyaz arka planı yok edip sayfaya yediren sihirli kod: */
+            mix-blend-mode: multiply; 
+            /* Kutu görünümü veren gölge ve kenarlıkları tamamen kaldırdık */
+            box-shadow: none;
+            border-radius: 0;
         }
+        
 
         h1 {
             color: var(--bordo);
@@ -99,13 +103,13 @@
             transition: all 1s ease; /* Bitişe çekerken yumuşak geçiş için */
         }
 
-        /* YÜZME TURLARI (GİT-GEL ANİMASYONU) */
+        /* YÜZME TURLARI (GİT-GEL ANİMASYONU) - DÜZELTİLMİŞ YÖNLER */
         @keyframes turlama {
-            0%   { left: 2%; transform: scaleX(1); } /* Duvara değdi, sağa bakıyor */
-            45%  { left: 88%; transform: scaleX(1); } /* Karşı duvara ulaştı */
-            50%  { left: 88%; transform: scaleX(-1); } /* Dönüş taklası attı (Sola döndü) */
-            95%  { left: 2%; transform: scaleX(-1); } /* Geri döndü */
-            100% { left: 2%; transform: scaleX(1); } /* Tekrar sağa döndü */
+            0%   { left: 2%; transform: scaleX(-1); } /* Başlangıç: Sağa doğru yüzüyor, sağa bakıyor */
+            45%  { left: 88%; transform: scaleX(-1); } /* Sağ duvara ulaştı, hala sağa bakıyor */
+            50%  { left: 88%; transform: scaleX(1); } /* Dönüş: Sola doğru yüzmek için sola döndü */
+            95%  { left: 2%; transform: scaleX(1); } /* Geri dönüyor: Sola doğru yüzüyor, sola bakıyor */
+            100% { left: 2%; transform: scaleX(-1); } /* Tekrar sağa dönmek için sağa döndü */
         }
 
         /* GİRİŞ BUTONU (Başlangıçta Gizli) */

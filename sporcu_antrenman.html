@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sporcu Antrenman Atama</title>
+    <link rel="stylesheet" href="antrenman.css"> <!-- Stil dosyasını yeniden kullanabiliriz -->
+    <style>
+        /* antrenman.html'den kopyalanan temel stiller */
+        :root { --arkaplan: #f8fafc; --kart-bg: #ffffff; --kenarlik: #e2e8f0; --mavi: #0284c7; --bordo: #9f1239; --metin-ana: #0f172a; --metin-alt: #64748b; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--arkaplan); color: var(--metin-ana); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .modul-alani { display: flex; flex: 1; overflow: hidden; }
+        .sol-menu { width: 420px; background-color: var(--kart-bg); border-right: 1px solid var(--kenarlik); display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; z-index: 10; overflow-y: auto; }
+        .baslik { margin: 0 0 20px 0; font-size: 22px; color: var(--mavi); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;}
+        .form-grup { margin-bottom: 15px; }
+        .form-grup label.baslik-label { display: block; margin-bottom: 5px; color: var(--metin-alt); font-size: 13px; font-weight: bold;}
+        .form-grup input, .form-grup select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--kenarlik); background-color: #f1f5f9; color: var(--metin-ana); box-sizing: border-box; outline: none; font-size: 15px; }
+        .btn-birincil { background-color: var(--mavi); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: auto; }
+        .sag-alan { flex: 1; display: flex; flex-direction: column; padding: 30px; background-color: var(--arkaplan); overflow-y: auto; }
+        .sag-baslik { margin: 0 0 25px 0; color: var(--metin-ana); font-size: 24px;}
+        .program-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .program-kart { background-color: var(--kart-bg); border-radius: 8px; border: 1px solid var(--kenarlik); padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; border-top: 4px solid var(--mavi); }
+        .program-kart.kara-kart { border-top-color: var(--bordo); }
+        .pk-baslik { font-size: 18px; font-weight: bold; color: var(--metin-ana); margin-bottom: 5px;}
+        .pk-tarih { font-size: 12px; color: var(--metin-alt); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--kenarlik);}
+        .pk-setler { margin-bottom: 15px; font-size: 14px; color: var(--metin-ana); line-height: 1.6; flex-grow: 1;}
+        .pk-set-item { display: flex; flex-direction: column; margin-bottom: 8px; padding-left: 12px; position: relative;}
+        .pk-set-item::before { content: "•"; color: var(--mavi); font-weight: bold; position: absolute; left: 0; top: 0;}
+        .kara-kart .pk-set-item::before { color: var(--bordo); }
+        .pk-set-ekipman { font-size: 12px; color: var(--metin-alt); font-style: italic; }
+        .pk-alt { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--kenarlik); padding-top: 15px; margin-top: auto;}
+        .pk-metraj { font-weight: bold; font-size: 16px; color: var(--metin-ana); background-color: #f1f5f9; padding: 5px 10px; border-radius: 4px;}
+        .sekme-menusu { background-color: var(--kart-bg); border-bottom: 1px solid var(--kenarlik); display: flex; padding: 15px 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); z-index: 20; gap: 10px;}
+        .sekme-btn { flex: 1; background-color: #f8fafc; border: 1px solid var(--kenarlik); padding: 12px 20px; font-size: 15px; font-weight: bold; color: var(--metin-alt); cursor: pointer; border-radius: 8px; transition: all 0.2s ease; text-align: center;}
+        .sekme-btn:hover { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); }
+        .sekme-btn.aktif { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1); }
+        .gizli { display: none !important; }
+        #mesajKutusu { display: none; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: bold; }
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .modul-alani { flex-direction: column; overflow: visible; }
+            .sol-menu { width: 100%; border-right: none; border-bottom: 2px solid var(--kenarlik); }
+            .sag-alan { padding: 15px; overflow-y: visible; }
+            .program-grid { grid-template-columns: 1fr; }
+            .pk-alt { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .sekme-menusu { flex-wrap: wrap; }
+            .sekme-btn { flex: 1; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modul-alani">
+        <div class="sol-menu">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px; margin-bottom: 20px;">
+                <h2 class="baslik" id="atamaBaslik" style="border:none; margin:0; padding:0; color:var(--mavi);">Antrenman Ata</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="window.history.back()" style="padding:8px 12px; background:#f1f5f9; border:1px solid var(--kenarlik); border-radius:6px; cursor:pointer; font-weight:bold; color:var(--metin-ana);">⬅ Geri</button>
+                <a href="menu.html" style="padding:8px 12px; background:#f0f9ff; border:1px solid var(--mavi); border-radius:6px; text-decoration:none; color:var(--mavi); font-weight:bold;">🏠 Menü</a>
+                </div>
+            </div>
+            <div id="mesajKutusu"></div>
+            <div class="form-grup">
+                <label class="baslik-label">Tarih</label>
+                <input type="date" id="atamaTarih">
+            </div>
+            <div class="form-grup">
+                <label class="baslik-label">Antrenman Modülü Seç</label>
+                <select id="modulSecici">
+                    <option value="">Yükleniyor...</option>
+                </select>
+            </div>
+            <button class="btn-birincil" onclick="antrenmanAta()">✅ Seçili Antrenmanı Ata</button>
+        </div>
+
+        <div class="sag-alan">
+            <h1 class="sag-baslik" id="gecmisBaslik">Antrenman Geçmişi</h1>
+            <div class="sekme-menusu" style="margin-bottom: 20px; border-radius: 12px;">
+                <button class="sekme-btn aktif" id="btnHavuz" onclick="sekmeDegistir('havuz')">🏊‍♂️ Havuz</button>
+                <button class="sekme-btn" id="btnKara" onclick="sekmeDegistir('kara')">🏋️‍♂️ Kara</button>
+            </div>
+            <div id="havuzGecmisi" class="program-grid"></div>
+            <div id="karaGecmisi" class="program-grid gizli"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000/api";
+        let sporcuID = null;
+        let sporcuIsim = "";
+        let tumModuller = [];
+
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            sporcuID = params.get('id');
+            sporcuIsim = decodeURIComponent(params.get('isim') || 'Sporcu');
+
+            if (!sporcuID) {
+                document.body.innerHTML = "<h1>Hata: Sporcu ID bulunamadı.</h1>";
+                return;
+            }
+
+            document.title = `${sporcuIsim} | Antrenman Geçmişi`;
+            document.getElementById('atamaBaslik').innerText = `${sporcuIsim} - Antrenman Ata`;
+            document.getElementById('gecmisBaslik').innerText = `${sporcuIsim} - Antrenman Geçmişi`;
+            document.getElementById('atamaTarih').valueAsDate = new Date();
+
+            modulleriYukle();
+            gecmisiYukle();
+        };
+
+        async function modulleriYukle() {
+            try {
+                const res = await fetch(`${API_BASE}/antrenman/moduller`);
+                const data = await res.json();
+                tumModuller = data.moduller || [];
+                const secici = document.getElementById('modulSecici');
+                secici.innerHTML = '<option value="">-- Bir modül seçin --</option>';
+                tumModuller.forEach(modul => {
+                    secici.innerHTML += `<option value="${modul.ProgramID}">${modul.ProgramAdi} (${modul.Tip})</option>`;
+                });
+            } catch (e) {
+                document.getElementById('modulSecici').innerHTML = '<option>Modüller yüklenemedi!</option>';
+            }
+        }
+
+        async function gecmisiYukle() {
+            try {
+                const res = await fetch(`${API_BASE}/sporcu/antrenman/${sporcuID}`);
+                const data = await res.json();
+                const gecmis = data.antrenmanlar || [];
+
+                const havuzGecmisi = gecmis.filter(g => g.tip === 'Havuz');
+                const karaGecmisi = gecmis.filter(g => g.tip === 'Kara');
+
+                gridCiz('havuzGecmisi', havuzGecmisi, 'Havuz');
+                gridCiz('karaGecmisi', karaGecmisi, 'Kara');
+
+            } catch (e) {
+                document.getElementById('havuzGecmisi').innerHTML = "Geçmiş yüklenemedi.";
+            }
+        }
+
+        async function antrenmanAta() {
+            const modulID = document.getElementById('modulSecici').value;
+            const tarih = document.getElementById('atamaTarih').value;
+
+            if (!modulID || !tarih) {
+                return alert("Lütfen tarih ve bir antrenman modülü seçin.");
+            }
+
+            const seciliModul = tumModuller.find(m => m.ProgramID === modulID);
+            if (!seciliModul) return alert("Seçili modül bulunamadı.");
+
+            const d = new Date(tarih);
+            const formatliTarih = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+
+            let metrajVeyaHareket = "";
+            const detaylar = JSON.parse(seciliModul.SetlerJSON);
+            if (seciliModul.Tip === 'Havuz') {
+                metrajVeyaHareket = detaylar.reduce((sum, set) => sum + (set.toplamM || 0), 0) + "m";
+            } else {
+                metrajVeyaHareket = detaylar.length + " hareket";
+            }
+
+            const payload = {
+                sporcu_id: sporcuID,
+                tarih: formatliTarih,
+                program_adi: seciliModul.ProgramAdi,
+                tip: seciliModul.Tip,
+                detay_json: seciliModul.SetlerJSON,
+                metraj_veya_hareket: metrajVeyaHareket
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/sporcu/antrenman/ata`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                const mesajKutusu = document.getElementById('mesajKutusu');
+                if (res.ok) {
+                    mesajKutusu.innerText = "✅ Başarıyla atandı!";
+                    mesajKutusu.style.color = 'var(--mavi)';
+                    mesajKutusu.style.backgroundColor = '#f0f9ff';
+                    gecmisiYukle(); // Listeyi yenile
+                } else {
+                    mesajKutusu.innerText = "❌ Hata: " + data.detail;
+                    mesajKutusu.style.color = 'var(--bordo)';
+                    mesajKutusu.style.backgroundColor = '#fef2f2';
+                }
+                mesajKutusu.style.display = 'block';
+                setTimeout(() => { mesajKutusu.style.display = 'none'; }, 3000);
+
+            } catch (e) {
+                alert("API bağlantı hatası!");
+            }
+        }
+
+        function sekmeDegistir(sekmeAdi) {
+            document.getElementById("btnHavuz").classList.remove("aktif");
+            document.getElementById("btnKara").classList.remove("aktif");
+            document.getElementById("havuzGecmisi").classList.add("gizli");
+            document.getElementById("karaGecmisi").classList.add("gizli");
+
+            if(sekmeAdi === 'havuz') {
+                document.getElementById("btnHavuz").classList.add("aktif");
+                document.getElementById("havuzGecmisi").classList.remove("gizli");
+            } else {
+                document.getElementById("btnKara").classList.add("aktif");
+                document.getElementById("karaGecmisi").classList.remove("gizli");
+            }
+        }
+
+        function gridCiz(gridID, programlar, tip) {
+            const grid = document.getElementById(gridID);
+            grid.innerHTML = "";
+            if (!programlar || programlar.length === 0) {
+                grid.innerHTML = `<div style="color: var(--metin-alt);">Bu sporcu için kayıtlı ${tip.toLowerCase()} antrenmanı yok.</div>`;
+                return;
+            }
+
+            programlar.forEach(prog => {
+                const kart = document.createElement("div");
+                kart.className = tip === 'Havuz' ? "program-kart" : "program-kart kara-kart";
+                
+                let detaylar;
+                try {
+                    detaylar = JSON.parse(prog.detay_json);
+                } catch (e) { return; }
+
+                let setlerHTML = "";
+                if (tip === 'Havuz') {
+                    setlerHTML = detaylar.map(set => {
+                        let metin = set.tekrar > 1 ? `${set.tekrar} x ${set.mesafe}m ${set.stil}` : `${set.mesafe}m ${set.stil}`;
+                        let ekipmanMetni = set.ekipmanlar.length > 0 ? `<div class="pk-set-ekipman">+ ${set.ekipmanlar.join(', ')}</div>` : "";
+                        return `<div class="pk-set-item"><div>${metin}</div>${ekipmanMetni}</div>`;
+                    }).join('');
+                } else { // Kara
+                    setlerHTML = detaylar.map(egz => {
+                        return `<div class="pk-set-item"><div><b>${egz.egzersiz}</b> <span style="color:var(--metin-alt); font-size:12px;">(${egz.setSayisi}x${egz.tekrarSuresi})</span></div></div>`;
+                    }).join('');
+                }
+
+                kart.innerHTML = `
+                    <div class="pk-baslik" style="color: ${tip === 'Havuz' ? 'var(--mavi)' : 'var(--bordo)'};">${prog.program_adi}</div>
+                    <div class="pk-tarih">${prog.tarih}</div>
+                    <div class="pk-setler">${setlerHTML}</div>
+                    <div class="pk-alt">
+                        <div class="pk-metraj" style="background-color: ${tip === 'Havuz' ? '#f1f5f9' : '#fef2f2'}; color: ${tip === 'Havuz' ? 'var(--metin-ana)' : 'var(--bordo)'};">
+                            ${prog.metraj_veya_hareket}
+                        </div>
+                    </div>`;
+                grid.appendChild(kart);
+            });
+        }
+    </script>
+</body>
+</html>
