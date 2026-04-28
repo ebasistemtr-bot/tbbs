@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelecek Yarış Programı</title>
+    <title>Gelecek Yarış Programı ve Hedefler</title>
     <style>
         :root {
             --arkaplan: #f0f2f5; 
@@ -13,13 +13,14 @@
             --metin-ana: #1e293b; 
             --metin-alt: #64748b; 
             --kenarlik: #e2e8f0;
+            --yesil: #10b981;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--arkaplan);
             color: var(--metin-ana);
             margin: 0;
-            padding: 50px 20px;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,22 +29,171 @@
             background-color: var(--kart-bg);
             border: 1px solid var(--kenarlik);
             border-radius: 15px;
-            padding: 40px;
+            padding: 30px;
             text-align: center;
-            max-width: 600px;
+            width: 100%;
+            max-width: 900px; /* Tablo sığsın diye biraz genişlettik */
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .kutu h1 { color: var(--mavi); margin-top: 0; }
-        .btn-ana { display: inline-block; background-color: var(--mavi); color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.2s;}
-        .btn-ana:hover { background-color: #0369a1; }
+        .kutu h1 { color: var(--mavi); margin-top: 0; margin-bottom: 5px; }
+        .kutu h3 { color: var(--metin-alt); margin-top: 0; font-weight: normal; font-size: 16px; margin-bottom: 25px; }
+        
+        .btn-ana { display: inline-block; background-color: var(--metin-alt); color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.2s;}
+        .btn-ana:hover { background-color: #475569; }
+        
+        /* Tablo Tasarımı */
+        .tablo-kapsayici {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--kenarlik);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th {
+            background-color: #f8fafc;
+            color: var(--metin-ana);
+            padding: 15px;
+            border-bottom: 2px solid var(--kenarlik);
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--kenarlik);
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #f1f5f9; }
+        
+        /* İnput ve Butonlar */
+        .hedef-input {
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            width: 110px;
+            text-align: center;
+            font-size: 14px;
+            outline: none;
+        }
+        .hedef-input:focus { border-color: var(--mavi); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        .btn-kaydet {
+            background-color: var(--mavi);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-kaydet:hover { background-color: #0369a1; }
+        .durum-basarili { background-color: var(--yesil) !important; }
+        
+        #loadingMesaj { color: var(--bordo); font-weight: bold; margin: 20px 0; }
     </style>
 </head>
 <body>
     <div class="kutu">
-        <div style="font-size: 50px; margin-bottom: 20px;">🚧</div>
-        <h1>Yapım Aşamasında</h1>
-        <p style="color: var(--metin-alt); line-height: 1.6;">Gelecek Yarış Programı modülü bu alana inşa edilecektir. Hazır olduğunda ana menüden veya sporcu profillerinden bu sisteme veri aktarabileceksiniz.</p>
-        <a href="menu.html" class="btn-ana">Ana Menüye Dön</a>
+        <h1>📅 Gelecek Yarış Planı</h1>
+        <h3 id="sporcuIsmiGosterge">Sporcu verileri yükleniyor...</h3>
+        
+        <div id="loadingMesaj">⏳ Sistem uyanıyor ve veriler çekiliyor, lütfen bekleyin...</div>
+
+        <div class="tablo-kapsayici" id="tabloAlani" style="display: none;">
+            <table id="yarisTablosu">
+                <thead>
+                    <tr>
+                        <th>Gün & Seans</th>
+                        <th>Branş</th>
+                        <th>Eski Derecesi</th>
+                        <th style="text-align: center;">🎯 Hedef / Yeni Derece</th>
+                        <th style="text-align: center;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="tabloGovdesi">
+                    </tbody>
+            </table>
+        </div>
+
+        <br>
+        <a href="menu.html" class="btn-ana">🔙 Ana Menüye Dön</a>
     </div>
+
+    <script>
+        // 1. URL'den Sporcu ID'sini yakala (Örn: gelecek_yaris.html?id=15_ELIF_NAS_CAVDAR)
+        const urlParams = new URLSearchParams(window.location.search);
+        const sporcu_id = urlParams.get('id');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!sporcu_id) {
+                document.getElementById("loadingMesaj").innerHTML = "⚠️ Hata: Linkte sporcu kimliği (ID) bulunamadı! Lütfen sporcu profilinden tıklayarak gelin.";
+                document.getElementById("loadingMesaj").style.color = "red";
+                document.getElementById("sporcuIsmiGosterge").innerText = "Bilinmeyen Sporcu";
+                return;
+            }
+            
+            // Verileri çekmeye başla
+            verileriGetir();
+        });
+
+        async function verileriGetir() {
+            // Render'daki API adresimiz
+            const api_url = `https://trabzon-yuzme-api.onrender.com/api/sporcu/gelecek_yarislar/${sporcu_id}`;
+            
+            try {
+                const response = await fetch(api_url);
+                const data = await response.json();
+                
+                document.getElementById("loadingMesaj").style.display = "none";
+                document.getElementById("tabloAlani").style.display = "block";
+                
+                const tbody = document.getElementById("tabloGovdesi");
+                
+                if (data.yarislar && data.yarislar.length > 0) {
+                    // İlk yarıştan sporcunun adını alıp başlığa yazalım
+                    document.getElementById("sporcuIsmiGosterge").innerText = `Yüzücü: ${data.yarislar[0]["Sporcu Adı"]}`;
+                    
+                    data.yarislar.forEach((yaris, index) => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td><strong>${yaris["Gün ve Seans"]}</strong></td>
+                            <td>${yaris["Branş"]}</td>
+                            <td style="color: var(--metin-alt); font-weight: 500;">${yaris["Kayıtlı Eski Derece"]}</td>
+                            <td style="text-align: center;">
+                                <input type="text" id="hedef_${index}" class="hedef-input" placeholder="Örn: 01:25.50">
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-kaydet" onclick="hedefiKaydet(this, 'hedef_${index}')">Kaydet</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    document.getElementById("sporcuIsmiGosterge").innerText = "Kayıt Bulunamadı";
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--metin-alt);">🏊‍♂️ Bu sporcunun yakın zamanda planlanmış bir yarışı bulunmuyor.</td></tr>`;
+                }
+            } catch (error) {
+                document.getElementById("loadingMesaj").innerHTML = "❌ Bağlantı hatası! Sunucu şu an meşgul veya uykuda olabilir. Lütfen sayfayı yenileyin.";
+                console.error("Hata:", error);
+            }
+        }
+
+        // Veli dereceyi girip butona basınca çalışacak görsel efekt
+        function hedefiKaydet(btn, inputId) {
+            const inputAlan = document.getElementById(inputId);
+            if(inputAlan.value.trim() !== "") {
+                btn.innerHTML = "✓ Kaydedildi";
+                btn.classList.add("durum-basarili");
+                inputAlan.style.backgroundColor = "#ecfdf5"; // Açık yeşil arka plan
+                inputAlan.style.borderColor = "var(--yesil)";
+                inputAlan.disabled = true; // Değiştirilmesini kilitle
+            } else {
+                alert("Lütfen kaydetmeden önce kutucuğa bir derece veya hedef yazın!");
+                inputAlan.focus();
+            }
+        }
+    </script>
 </body>
 </html>
