@@ -3,195 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelecek Yarış Programı ve Hedefler</title>
+    <title>Antrenör Yarış Kontrol Paneli</title>
     <style>
         :root {
-            --arkaplan: #f0f2f5; 
-            --kart-bg: #ffffff; 
-            --bordo: #9f1239; 
-            --mavi: #0284c7; 
-            --metin-ana: #1e293b; 
-            --metin-alt: #64748b; 
-            --kenarlik: #e2e8f0;
-            --yesil: #10b981;
+            --arkaplan: #f8fafc; --kart-bg: #ffffff; --bordo: #9f1239; 
+            --mavi: #0284c7; --metin-ana: #0f172a; --metin-alt: #64748b; 
+            --kenarlik: #e2e8f0; --pembe: #ec4899; --lacivert: #1d4ed8;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--arkaplan);
-            color: var(--metin-ana);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .kutu {
-            background-color: var(--kart-bg);
-            border: 1px solid var(--kenarlik);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            width: 100%;
-            max-width: 900px; /* Tablo sığsın diye biraz genişlettik */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .kutu h1 { color: var(--mavi); margin-top: 0; margin-bottom: 5px; }
-        .kutu h3 { color: var(--metin-alt); margin-top: 0; font-weight: normal; font-size: 16px; margin-bottom: 25px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--arkaplan); color: var(--metin-ana); margin: 0; padding: 20px; }
+        .kapsayici { max-width: 1000px; margin: 0 auto; background: var(--kart-bg); border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
         
-        .btn-ana { display: inline-block; background-color: var(--metin-alt); color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.2s;}
-        .btn-ana:hover { background-color: #475569; }
+        .baslik-alani { background: var(--bordo); padding: 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .baslik-alani h1 { margin: 0; font-size: 22px; }
+        .btn-ana { background: white; color: var(--bordo); text-decoration: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 14px; }
         
-        /* Tablo Tasarımı */
-        .tablo-kapsayici {
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid var(--kenarlik);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        th {
-            background-color: #f8fafc;
-            color: var(--metin-ana);
-            padding: 15px;
-            border-bottom: 2px solid var(--kenarlik);
-            font-weight: 600;
-        }
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--kenarlik);
-            vertical-align: middle;
-        }
+        .sekme-menusu { display: flex; background: var(--kart-bg); border-bottom: 2px solid var(--kenarlik); }
+        .sekme-btn { flex: 1; padding: 15px; border: none; background: none; font-size: 16px; font-weight: bold; color: var(--metin-alt); cursor: pointer; transition: 0.3s; }
+        .sekme-btn:hover { background: #f0f9ff; color: var(--mavi); }
+        .sekme-btn.aktif { color: var(--mavi); border-bottom: 3px solid var(--mavi); background: #f0f9ff; }
+        
+        .icerik-alani { padding: 20px; }
+        .seans-baslik { font-size: 18px; color: var(--metin-ana); margin: 30px 0 15px 0; border-bottom: 2px solid var(--kenarlik); padding-bottom: 5px; }
+        .seans-baslik:first-child { margin-top: 0; }
+        
+        .yaris-kutu { background: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+        .yaris-baslik { background: var(--mavi); color: white; padding: 10px 15px; font-weight: bold; font-size: 15px; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 10px 15px; color: var(--metin-alt); font-size: 12px; border-bottom: 1px solid var(--kenarlik); }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--kenarlik); font-size: 14px; }
         tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f1f5f9; }
         
-        /* İnput ve Butonlar */
-        .hedef-input {
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            width: 110px;
-            text-align: center;
-            font-size: 14px;
-            outline: none;
-        }
-        .hedef-input:focus { border-color: var(--mavi); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
-        .btn-kaydet {
-            background-color: var(--mavi);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-kaydet:hover { background-color: #0369a1; }
-        .durum-basarili { background-color: var(--yesil) !important; }
+        .kiz-rozet { background: #fdf2f8; color: var(--pembe); border: 1px solid #fbcfe8; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 5px; }
+        .erkek-rozet { background: #eff6ff; color: var(--lacivert); border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 5px; }
         
-        #loadingMesaj { color: var(--bordo); font-weight: bold; margin: 20px 0; }
+        .yukleniyor { text-align: center; padding: 40px; color: var(--mavi); font-size: 18px; font-weight: bold; }
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            .baslik-alani { flex-direction: column; gap: 15px; text-align: center; }
+            .sekme-btn { font-size: 14px; padding: 12px; }
+            .kapsayici { border-radius: 0; }
+            body { padding: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="kutu">
-        <h1>📅 Gelecek Yarış Planı</h1>
-        <h3 id="sporcuIsmiGosterge">Sporcu verileri yükleniyor...</h3>
-        
-        <div id="loadingMesaj">⏳ Sistem uyanıyor ve veriler çekiliyor, lütfen bekleyin...</div>
-
-        <div class="tablo-kapsayici" id="tabloAlani" style="display: none;">
-            <table id="yarisTablosu">
-                <thead>
-                    <tr>
-                        <th>Gün & Seans</th>
-                        <th>Branş</th>
-                        <th>Eski Derecesi</th>
-                        <th style="text-align: center;">🎯 Hedef / Yeni Derece</th>
-                        <th style="text-align: center;">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody id="tabloGovdesi">
-                    </tbody>
-            </table>
+    <div class="kapsayici">
+        <div class="baslik-alani">
+            <h1>⏱️ Antrenör Yarış Paneli</h1>
+            <a href="menu.html" class="btn-ana">Ana Menü</a>
         </div>
-
-        <br>
-        <a href="menu.html" class="btn-ana">🔙 Ana Menüye Dön</a>
+        
+        <div class="sekme-menusu">
+            <button class="sekme-btn aktif" onclick="gunDegistir(1)">1. GÜN YARIŞLARI</button>
+            <button class="sekme-btn" onclick="gunDegistir(2)">2. GÜN YARIŞLARI</button>
+        </div>
+        
+        <div class="icerik-alani" id="listeAlani">
+            <div class="yukleniyor">Veriler ve Sporcu Eşleşmeleri Hazırlanıyor... ⏳</div>
+        </div>
     </div>
 
     <script>
-        // 1. URL'den Sporcu ID'sini yakala (Örn: gelecek_yaris.html?id=15_ELIF_NAS_CAVDAR)
-        const urlParams = new URLSearchParams(window.location.search);
-        const sporcu_id = urlParams.get('id');
-
-        document.addEventListener("DOMContentLoaded", () => {
-            if (!sporcu_id) {
-                document.getElementById("loadingMesaj").innerHTML = "⚠️ Hata: Linkte sporcu kimliği (ID) bulunamadı! Lütfen sporcu profilinden tıklayarak gelin.";
-                document.getElementById("loadingMesaj").style.color = "red";
-                document.getElementById("sporcuIsmiGosterge").innerText = "Bilinmeyen Sporcu";
-                return;
-            }
+        // const API_BASE = "https://trabzon-yuzme-api.onrender.com/api"; // Canlı Sunucu (Render)
+        const API_BASE = "http://127.0.0.1:8000/api"; // Yerel test için
+        
+        let tumYarislar = [];
+        let cinsiyetHaritasi = {};
+        
+        // YARIŞ SIRASI (Referans Alınan Harita)
+        const YARIS_PROGRAMI = [
+            { brans: "400M KARIŞIK", gun: 1, seans: "1. Gün Sabah" },
+            { brans: "100M SERBEST", gun: 1, seans: "1. Gün Sabah" },
+            { brans: "50M KELEBEK", gun: 1, seans: "1. Gün Sabah" },
+            { brans: "200M KURBAĞALAMA", gun: 1, seans: "1. Gün Sabah" },
+            { brans: "400M SERBEST", gun: 1, seans: "1. Gün Sabah" },
             
-            // Verileri çekmeye başla
-            verileriGetir();
-        });
-
-        async function verileriGetir() {
-            // Render'daki API adresimiz
-            const api_url = `https://trabzon-yuzme-api.onrender.com/api/sporcu/gelecek_yarislar/${sporcu_id}`;
+            { brans: "200M KELEBEK", gun: 1, seans: "1. Gün Akşam" },
+            { brans: "50M KURBAĞALAMA", gun: 1, seans: "1. Gün Akşam" },
+            { brans: "100M SIRTÜSTÜ", gun: 1, seans: "1. Gün Akşam" },
+            { brans: "800M SERBEST", gun: 1, seans: "1. Gün Akşam" },
             
+            { brans: "200M KARIŞIK", gun: 2, seans: "2. Gün Sabah" },
+            { brans: "50M SIRTÜSTÜ", gun: 2, seans: "2. Gün Sabah" },
+            { brans: "200M SERBEST", gun: 2, seans: "2. Gün Sabah" },
+            { brans: "100M KURBAĞALAMA", gun: 2, seans: "2. Gün Sabah" },
+            
+            { brans: "100M KELEBEK", gun: 2, seans: "2. Gün Akşam" },
+            { brans: "50M SERBEST", gun: 2, seans: "2. Gün Akşam" },
+            { brans: "200M SIRTÜSTÜ", gun: 2, seans: "2. Gün Akşam" },
+            { brans: "1500M SERBEST", gun: 2, seans: "2. Gün Akşam" }
+        ];
+
+        window.onload = async function() {
             try {
-                const response = await fetch(api_url);
-                const data = await response.json();
-                
-                document.getElementById("loadingMesaj").style.display = "none";
-                document.getElementById("tabloAlani").style.display = "block";
-                
-                const tbody = document.getElementById("tabloGovdesi");
-                
-                if (data.yarislar && data.yarislar.length > 0) {
-                    // İlk yarıştan sporcunun adını alıp başlığa yazalım
-                    document.getElementById("sporcuIsmiGosterge").innerText = `Yüzücü: ${data.yarislar[0]["Sporcu Adı"]}`;
-                    
-                    data.yarislar.forEach((yaris, index) => {
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td><strong>${yaris["Gün ve Seans"]}</strong></td>
-                            <td>${yaris["Branş"]}</td>
-                            <td style="color: var(--metin-alt); font-weight: 500;">${yaris["Kayıtlı Eski Derece"]}</td>
-                            <td style="text-align: center;">
-                                <input type="text" id="hedef_${index}" class="hedef-input" placeholder="Örn: 01:25.50">
-                            </td>
-                            <td style="text-align: center;">
-                                <button class="btn-kaydet" onclick="hedefiKaydet(this, 'hedef_${index}')">Kaydet</button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
+                // 1. Cinsiyet eşleştirmesi için sporcuları çek
+                const resSporcular = await fetch(`${API_BASE}/sporcular`);
+                const dataSporcular = await resSporcular.json();
+                if(dataSporcular.sporcular) {
+                    Object.entries(dataSporcular.sporcular).forEach(([id, s]) => {
+                        // Türkçe ID temizliği yaparak eşleştirme map'ini oluştur
+                        const tr_map = {"Ç":"C","Ğ":"G","I":"I","İ":"I","Ö":"O","Ş":"S","Ü":"U","ç":"c","ğ":"g","ı":"i","i":"i","ö":"o","ş":"s","ü":"u"};
+                        let temizId = id.replace(/[ÇĞIİÖŞÜçğıiöşü]/g, m => tr_map[m]).replace(/\s+/g, '_').toUpperCase();
+                        cinsiyetHaritasi[temizId] = s.cinsiyet === "Kadın" ? "Kadın" : "Erkek";
                     });
-                } else {
-                    document.getElementById("sporcuIsmiGosterge").innerText = "Kayıt Bulunamadı";
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--metin-alt);">🏊‍♂️ Bu sporcunun yakın zamanda planlanmış bir yarışı bulunmuyor.</td></tr>`;
                 }
-            } catch (error) {
-                document.getElementById("loadingMesaj").innerHTML = "❌ Bağlantı hatası! Sunucu şu an meşgul veya uykuda olabilir. Lütfen sayfayı yenileyin.";
-                console.error("Hata:", error);
-            }
-        }
 
-        // Veli dereceyi girip butona basınca çalışacak görsel efekt
-        function hedefiKaydet(btn, inputId) {
-            const inputAlan = document.getElementById(inputId);
-            if(inputAlan.value.trim() !== "") {
-                btn.innerHTML = "✓ Kaydedildi";
-                btn.classList.add("durum-basarili");
-                inputAlan.style.backgroundColor = "#ecfdf5"; // Açık yeşil arka plan
-                inputAlan.style.borderColor = "var(--yesil)";
-                inputAlan.disabled = true; // Değiştirilmesini kilitle
-            } else {
-                alert("Lütfen kaydetmeden önce kutucuğa bir derece veya hedef yazın!");
-                inputAlan.focus();
+                // 2. Tüm yarışları çek
+                const resYaris = await fetch(`${API_BASE}/gelecek_yarislar/tum`);
+                const dataYaris = await resYaris.json();
+                if(dataYaris.yarislar) {
+                    tumYarislar = dataYaris.yarislar.map(y => {
+                        // ID Eşleştirme ve Cinsiyet Atama
+                        const tr_map = {"Ç":"C","Ğ":"G","I":"I","İ":"I","Ö":"O","Ş":"S","Ü":"U","ç":"c","ğ":"g","ı":"i","i":"i","ö":"o","ş":"s","ü":"u"};
+                        let hId = (y.Sporcu_ID || "").replace(/[ÇĞIİÖŞÜçğıiöşü]/g, m => tr_map[m]).replace(/\s+/g, '_').toUpperCase();
+                        y.Cinsiyet = cinsiyetHaritasi[hId] || "Erkek"; // Varsayılan Erkek (Eşleşmezse)
+                        return y;
+                    });
+                }
+                
+                gunDegistir(1); // İlk açılışta 1. Günü çiz
+            } catch(e) {
+                document.getElementById('listeAlani').innerHTML = "<div class='yukleniyor' style='color:red;'>Bağlantı Hatası! Sunucu kapalı olabilir.</div>";
+            }
+        };
+
+        function gunDegistir(gun) {
+            document.querySelectorAll('.sekme-btn').forEach((b, i) => b.className = (i+1 === gun) ? 'sekme-btn aktif' : 'sekme-btn');
+            const alan = document.getElementById("listeAlani");
+            alan.innerHTML = "";
+            
+            let oGunProgrami = YARIS_PROGRAMI.filter(p => p.gun === gun);
+            let seanslar = [...new Set(oGunProgrami.map(p => p.seans))]; // Sabah, Akşam
+            
+            seanslar.forEach(seans => {
+                let seansDiv = document.createElement('div');
+                seansDiv.innerHTML = `<div class="seans-baslik">☀️ ${seans} Seansı</div>`;
+                
+                let oSeansYarislar = oGunProgrami.filter(p => p.seans === seans);
+                oSeansYarislar.forEach(yarisPlani => {
+                    // O yarışa giren sporcuları filtrele (Boşluk uyuşmazlıklarına karşı güvenlik kalkanı eklendi)
+                    let katilimcilar = tumYarislar.filter(y => {
+                        let hBrans = (y.Brans || "").toUpperCase().replace(/\s+/g, " ").trim();
+                        let pBrans = (yarisPlani.brans || "").toUpperCase().replace(/\s+/g, " ").trim();
+                        return hBrans === pBrans;
+                    });
+                    
+                    if(katilimcilar.length > 0) {
+                        // Sıralama Kuralı: Önce Kadın, Sonra Erkek, Sonra İsim Sırası
+                        katilimcilar.sort((a,b) => {
+                            if(a.Cinsiyet !== b.Cinsiyet) return a.Cinsiyet === "Kadın" ? -1 : 1;
+                            return (a.Sporcu_Adi || "").localeCompare(b.Sporcu_Adi || "", 'tr');
+                        });
+
+                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th>Hedef / Çıkış</th></tr></thead><tbody>`;
+                        katilimcilar.forEach(k => {
+                            let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
+                            tabloHTML += `<tr>
+                                <td><strong>${k.Sporcu_Adi}</strong> ${rozet}</td>
+                                <td style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
+                                <td><strong style="color:var(--mavi);">${k.Hedef || "-"}</strong></td>
+                            </tr>`;
+                        });
+                        tabloHTML += `</tbody></table>`;
+
+                        let yarisKutu = document.createElement('div');
+                        yarisKutu.className = "yaris-kutu";
+                        yarisKutu.innerHTML = `<div class="yaris-baslik">🏊‍♂️ ${yarisPlani.brans}</div>${tabloHTML}`;
+                        seansDiv.appendChild(yarisKutu);
+                    }
+                });
+                
+                // Eğer o seansta hiç yarışımız (sporcumuz) yoksa ufak bir uyarı
+                if(seansDiv.querySelectorAll('.yaris-kutu').length === 0) {
+                    seansDiv.innerHTML += `<p style="color:var(--metin-alt); font-size:14px; font-style:italic;">Bu seansta kulübümüze ait yüzecek sporcu bulunmuyor.</p>`;
+                }
+                
+                alan.appendChild(seansDiv);
+            });
+            
+            if(alan.innerHTML === "") {
+                alan.innerHTML = "<div class='yukleniyor'>Bu güne ait yarış/sporcu bulunamadı.</div>";
             }
         }
     </script>
