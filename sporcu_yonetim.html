@@ -284,7 +284,37 @@
                         </div>
                         <ul id="kronoTurlar" style="list-style: none; padding: 0; margin: 0 auto 20px auto; max-width: 400px; width: 100%; max-height: 150px; overflow-y: auto; text-align: left; background: var(--arkaplan); border-radius: 8px; border: 1px solid var(--kenarlik);"></ul>
                         <div style="display: flex; gap: 10px; justify-content: center; border-top: 1px solid var(--kenarlik); padding-top: 20px; flex-wrap: wrap; margin-top: auto;">
-                            <input type="text" id="kronoBrans" placeholder="Branş (Örn: 50m Serbest)" style="padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); flex: 1; min-width: 150px; outline:none;">
+                            <select id="kronoBrans" style="padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); flex: 1; min-width: 150px; outline:none; background-color: white; font-weight: bold; color: var(--metin-ana);">
+                                <option value="">-- Branş Seçin --</option>
+                                <optgroup label="Serbest">
+                                    <option value="50m Serbest">50m Serbest</option>
+                                    <option value="100m Serbest">100m Serbest</option>
+                                    <option value="200m Serbest">200m Serbest</option>
+                                    <option value="400m Serbest">400m Serbest</option>
+                                    <option value="800m Serbest">800m Serbest</option>
+                                    <option value="1500m Serbest">1500m Serbest</option>
+                                </optgroup>
+                                <optgroup label="Sırtüstü">
+                                    <option value="50m Sırtüstü">50m Sırtüstü</option>
+                                    <option value="100m Sırtüstü">100m Sırtüstü</option>
+                                    <option value="200m Sırtüstü">200m Sırtüstü</option>
+                                </optgroup>
+                                <optgroup label="Kurbağalama">
+                                    <option value="50m Kurbağalama">50m Kurbağalama</option>
+                                    <option value="100m Kurbağalama">100m Kurbağalama</option>
+                                    <option value="200m Kurbağalama">200m Kurbağalama</option>
+                                </optgroup>
+                                <optgroup label="Kelebek">
+                                    <option value="50m Kelebek">50m Kelebek</option>
+                                    <option value="100m Kelebek">100m Kelebek</option>
+                                    <option value="200m Kelebek">200m Kelebek</option>
+                                </optgroup>
+                                <optgroup label="Karışık">
+                                    <option value="100m Karışık">100m Karışık</option>
+                                    <option value="200m Karışık">200m Karışık</option>
+                                    <option value="400m Karışık">400m Karışık</option>
+                                </optgroup>
+                            </select>
                             <button onclick="kronoKaydet()" style="padding: 10px 20px; background-color: var(--bordo); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; white-space: nowrap;">💾 Arşive Ekle</button>
                         </div>
                         <div id="kronoMesaj" style="display:none; font-weight:bold; font-size:14px; margin-top:10px;"></div>
