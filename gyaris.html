@@ -9,6 +9,7 @@
             --arkaplan: #f8fafc; --kart-bg: #ffffff; --bordo: #9f1239; 
             --mavi: #0284c7; --metin-ana: #0f172a; --metin-alt: #64748b; 
             --kenarlik: #e2e8f0; --pembe: #ec4899; --lacivert: #1d4ed8;
+            --basari: #10b981; --uyari: #f59e0b;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--arkaplan); color: var(--metin-ana); margin: 0; padding: 20px; }
         .kapsayici { max-width: 1000px; margin: 0 auto; background: var(--kart-bg); border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
@@ -39,12 +40,24 @@
         
         .yukleniyor { text-align: center; padding: 40px; color: var(--mavi); font-size: 18px; font-weight: bold; }
 
+        .sonuc-input { padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; width: 80px; text-align: center; font-size: 13px; outline: none; transition: 0.2s;}
+        .sonuc-input:focus { border-color: var(--mavi); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        .btn-kaydet { background-color: var(--mavi); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s;}
+        .btn-kaydet:hover { filter: brightness(1.1); }
+
         /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
         @media (max-width: 768px) {
             .baslik-alani { flex-direction: column; gap: 15px; text-align: center; }
             .sekme-btn { font-size: 14px; padding: 12px; }
             .kapsayici { border-radius: 0; }
             body { padding: 0; }
+            
+            table thead { display: none; }
+            table tbody, table tr, table td { display: block; width: 100%; box-sizing: border-box; }
+            table tr { margin-bottom: 15px; border: 1px solid var(--kenarlik); border-radius: 8px; overflow: hidden; background: var(--kart-bg); }
+            table td { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kenarlik); text-align: right !important; padding: 10px 15px !important; }
+            table td:last-child { border-bottom: none; }
+            table td::before { content: attr(data-label); font-weight: bold; color: var(--metin-alt); font-size: 12px; text-align: left; text-transform: uppercase; margin-right: 10px; }
         }
     </style>
 </head>
@@ -66,11 +79,12 @@
     </div>
 
     <script>
-        // const API_BASE = "https://trabzon-yuzme-api.onrender.com/api"; // Canlı Sunucu (Render)
-        const API_BASE = "http://127.0.0.1:8000/api"; // Yerel test için
+        const API_BASE = "https://trabzon-yuzme-api.onrender.com/api"; // Canlı Sunucu (Render)
+        // const API_BASE = "http://127.0.0.1:8000/api"; // Yerel test için
         
         let tumYarislar = [];
         let cinsiyetHaritasi = {};
+        let dogumYiliHaritasi = {};
         
         // YARIŞ SIRASI (Referans Alınan Harita)
         const YARIS_PROGRAMI = [
@@ -107,6 +121,13 @@
                         const tr_map = {"Ç":"C","Ğ":"G","I":"I","İ":"I","Ö":"O","Ş":"S","Ü":"U","ç":"c","ğ":"g","ı":"i","i":"i","ö":"o","ş":"s","ü":"u"};
                         let temizId = id.replace(/[ÇĞIİÖŞÜçğıiöşü]/g, m => tr_map[m]).replace(/\s+/g, '_').toUpperCase();
                         cinsiyetHaritasi[temizId] = s.cinsiyet === "Kadın" ? "Kadın" : "Erkek";
+                        
+                        // Doğum yılını çıkar (Örn: 15.08.2015 -> 2015)
+                        let dy = 0;
+                        if(s.dogum_tarihi) {
+                            let p = s.dogum_tarihi.split("."); dy = parseInt(p[p.length - 1]) || 0;
+                        }
+                        dogumYiliHaritasi[temizId] = dy;
                     });
                 }
 
@@ -119,12 +140,20 @@
                         const tr_map = {"Ç":"C","Ğ":"G","I":"I","İ":"I","Ö":"O","Ş":"S","Ü":"U","ç":"c","ğ":"g","ı":"i","i":"i","ö":"o","ş":"s","ü":"u"};
                         let hId = (y.Sporcu_ID || "").replace(/[ÇĞIİÖŞÜçğıiöşü]/g, m => tr_map[m]).replace(/\s+/g, '_').toUpperCase();
                         y.Cinsiyet = cinsiyetHaritasi[hId] || "Erkek"; // Varsayılan Erkek (Eşleşmezse)
+                        y.Dogum_Yili = dogumYiliHaritasi[hId] || 0;
+                        
+                        // Eğer profilde doğum yılı yoksa, ID başındaki 16_ gibi ifadeden yılı yakala (Yedek Plan)
+                        if(y.Dogum_Yili === 0) {
+                            let match = hId.match(/^(\d{2})_/);
+                            if(match) y.Dogum_Yili = parseInt("20" + match[1]);
+                        }
                         return y;
                     });
                 }
                 
                 gunDegistir(1); // İlk açılışta 1. Günü çiz
             } catch(e) {
+                console.error("API Hatası:", e);
                 document.getElementById('listeAlani').innerHTML = "<div class='yukleniyor' style='color:red;'>Bağlantı Hatası! Sunucu kapalı olabilir.</div>";
             }
         };
@@ -151,19 +180,26 @@
                     });
                     
                     if(katilimcilar.length > 0) {
-                        // Sıralama Kuralı: Önce Kadın, Sonra Erkek, Sonra İsim Sırası
+                        // Sıralama Kuralı: Önce Kadın, Sonra Doğum Yılı (Büyük/Yakın Yıl Önce), Sonra İsim Sırası
                         katilimcilar.sort((a,b) => {
                             if(a.Cinsiyet !== b.Cinsiyet) return a.Cinsiyet === "Kadın" ? -1 : 1;
+                            if(a.Dogum_Yili !== b.Dogum_Yili) return b.Dogum_Yili - a.Dogum_Yili;
                             return (a.Sporcu_Adi || "").localeCompare(b.Sporcu_Adi || "", 'tr');
                         });
 
-                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th>Hedef / Çıkış</th></tr></thead><tbody>`;
-                        katilimcilar.forEach(k => {
+                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th style="text-align:center;">Sonuç (Derece)</th><th style="text-align:center;">İşlem</th></tr></thead><tbody>`;
+                        katilimcilar.forEach((k, index) => {
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
+                            let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
                             tabloHTML += `<tr>
-                                <td><strong>${k.Sporcu_Adi}</strong> ${rozet}</td>
-                                <td style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
-                                <td><strong style="color:var(--mavi);">${k.Hedef || "-"}</strong></td>
+                                <td data-label="Sporcu Adı"><strong>${k.Sporcu_Adi}</strong> ${rozet}</td>
+                                <td data-label="Eski Derece" style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
+                                <td data-label="Sonuç" style="text-align:center;">
+                                    <input type="text" id="${inpId}" class="sonuc-input" value="${k.Hedef || ''}" placeholder="00:00.00">
+                                </td>
+                                <td data-label="İşlem" style="text-align:center;">
+                                    <button class="btn-kaydet" onclick="sonucKaydet(this, '${inpId}', '${k.Sporcu_ID}', '${yarisPlani.brans}')">💾 Kaydet</button>
+                                </td>
                             </tr>`;
                         });
                         tabloHTML += `</tbody></table>`;
@@ -185,6 +221,24 @@
             
             if(alan.innerHTML === "") {
                 alan.innerHTML = "<div class='yukleniyor'>Bu güne ait yarış/sporcu bulunamadı.</div>";
+            }
+        }
+
+        async function sonucKaydet(btn, inputId, sId, brans) {
+            const inp = document.getElementById(inputId);
+            const sonuc = inp.value.trim();
+            if(!sonuc) return alert("Lütfen geçerli bir derece girin.");
+            
+            btn.innerText = "⏳..."; btn.style.backgroundColor = "var(--uyari)";
+            try {
+                const res = await fetch(`${API_BASE}/gelecek_yaris/hedef_kaydet`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: sId, brans: brans, hedef_derece: sonuc }) });
+                const data = await res.json();
+                if(res.ok && !data.hata) {
+                    btn.innerText = "✅"; btn.style.backgroundColor = "var(--basari)"; inp.style.backgroundColor = "#ecfdf5"; inp.style.borderColor = "var(--basari)";
+                    setTimeout(() => { btn.innerText = "💾 Kaydet"; btn.style.backgroundColor = "var(--mavi)"; }, 2000);
+                } else { alert("Hata: " + (data.hata || "Bilinmeyen Hata")); btn.innerText = "💾 Kaydet"; btn.style.backgroundColor = "var(--mavi)";}
+            } catch(e) {
+                alert("Bağlantı Hatası"); btn.innerText = "💾 Kaydet"; btn.style.backgroundColor = "var(--mavi)";
             }
         }
     </script>
