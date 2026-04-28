@@ -1,0 +1,8 @@
+Bundan sonra HTML'de (örneğin giris.html veya index.html) bir yeri mi değiştirdin? Yüklemek için ne fareyle uğraşacaksın ne de uzun uzun komut yazacaksın.
+
+Sadece VS Code terminaline şunu yazıp Enter'a basacaksın:
+Bash
+
+./vitrini_guncelle.sh
+
+Bu sihirli dosya uyanacak; senin HTML dosyalarını bulacak, görünmez bir şekilde yan klasöre taşıyacak ve anında GitHub'daki Public (trabzon-yuzme-web) depona fırlatıp sana "İşlem Tamam!" diyecek. Senin haberin bile olmadan siten saniyeler içinde güncellenecek.

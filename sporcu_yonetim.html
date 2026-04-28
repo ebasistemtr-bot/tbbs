@@ -60,18 +60,20 @@
         .btn-antrenman:hover { background-color: #e2e8f0; }
 
         /* CRM KARTI */
+        .crm-accordion-header { background-color: var(--kart-bg); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--kenarlik); cursor: pointer; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.2s; user-select: none;}
+        .crm-accordion-header:hover { border-color: var(--mavi); background-color: #f0f9ff;}
         .crm-kutu { background-color: var(--kart-bg); border: 1px solid var(--kenarlik); padding: 20px; border-radius: 15px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
         .crm-item label { color: var(--metin-alt); font-size: 12px; display: block; margin-bottom: 3px; text-transform: uppercase;}
         .crm-item span { color: var(--metin-ana); font-size: 14px; font-weight: bold; }
 
         /* FİLTRELEME (2 SATIRLI) */
-        .filtre-kutusu { background-color: var(--kart-bg); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--kenarlik); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-        .filtre-satir { display: flex; gap: 15px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+        .filtre-kutusu { background-color: var(--kart-bg); padding: 12px 15px; border-radius: 12px; border: 1px solid var(--kenarlik); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .filtre-satir { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
         .filtre-satir:last-child { margin-bottom: 0; }
-        .filtre-baslik { color: var(--metin-alt); font-size: 12px; text-transform: uppercase; font-weight: bold; width: 60px; }
-        .brans-btn { background-color: var(--arkaplan); border: 1px solid var(--kenarlik); color: var(--metin-alt); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
-        .brans-btn:hover { border-color: var(--mavi); color: var(--mavi); }
-        .brans-btn.aktif { background-color: var(--mavi); color: white; border-color: var(--mavi); }
+        .filtre-baslik { color: var(--metin-alt); font-size: 11px; text-transform: uppercase; font-weight: bold; width: 50px; }
+        .brans-btn { background-color: #f8fafc; border: 1px solid var(--kenarlik); color: var(--metin-alt); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; text-transform: capitalize; }
+        .brans-btn:hover { border-color: var(--mavi); color: var(--mavi); background-color: #f0f9ff; }
+        .brans-btn.aktif { background-color: #f0f9ff; color: var(--mavi); border-color: var(--mavi); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1); }
 
         /* İÇERİK (GRAFİK VE LİSTE) */
         .profil-icerik { display: flex; gap: 25px; flex-wrap: wrap; align-items: flex-start;}
@@ -91,8 +93,8 @@
         .modal-ust h3 { margin: 0; color: var(--bordo); }
         .btn-kapat { background: none; border: none; color: var(--metin-alt); font-size: 24px; cursor: pointer; }
         
-        .modal-sekmeler { display: flex; background-color: var(--kart-bg); border-bottom: 1px solid var(--kenarlik); padding: 15px; gap: 10px; flex-wrap: wrap;}
-        .sekme-btn { flex: 1; padding: 12px 15px; background-color: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 8px; color: var(--metin-alt); cursor: pointer; font-weight: bold; transition: all 0.2s ease; text-align: center;}
+        .modal-sekmeler { display: grid; grid-template-columns: repeat(3, 1fr); background-color: var(--kart-bg); border-bottom: 1px solid var(--kenarlik); padding: 15px; gap: 12px;}
+        .sekme-btn { padding: 15px 10px; font-size: 15px; background-color: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 10px; color: var(--metin-alt); cursor: pointer; font-weight: bold; transition: all 0.2s ease; text-align: center; }
         .sekme-btn:hover { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); }
         .sekme-btn.aktif { background-color: #f0f9ff; border-color: var(--mavi); color: var(--mavi); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1); }
         .modal-icerik { padding: 20px; overflow-y: auto;}
@@ -114,6 +116,7 @@
         .btn-duzen:hover { background-color: rgba(245,158,11,0.1); }
 
         .devam-liste-item { background-color: var(--kart-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--kenarlik); margin-bottom: 10px; font-size: 15px;}
+        .krono-sag-alan { flex: 1; min-width: 300px; padding-left: 30px; border-left: 1px solid var(--kenarlik); }
 
         /* MOBİL İÇİN ÖZEL ELEMANLAR */
         .mobil-kapat-btn { display: none; width: 100%; background-color: #f1f5f9; color: var(--metin-ana); padding: 15px; border: 1px solid var(--kenarlik); border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; font-size: 16px; text-align: center; transition: 0.2s;}
@@ -140,11 +143,16 @@
             .modal-kutu { width: 95%; max-height: 95vh; margin: 10px; }
             .form-satir { flex-direction: column; gap: 10px; }
             .crm-kutu { grid-template-columns: 1fr 1fr; }
+            .filtre-kutusu { padding: 12px; }
+            .filtre-satir { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .filtre-baslik { width: auto; margin-bottom: -2px; }
+            .krono-sag-alan { padding-left: 0; border-left: none; border-top: 1px solid var(--kenarlik); padding-top: 20px; }
+            #kronoEkran { font-size: 42px !important; }
         }
         @media (max-width: 480px) {
             .crm-kutu { grid-template-columns: 1fr; }
-            .modal-sekmeler { flex-direction: column; }
-            .sekme-btn { border-bottom: 1px solid var(--kenarlik); }
+            .modal-sekmeler { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+            .sekme-btn { padding: 12px 5px; font-size: 13px; border: 1px solid var(--kenarlik); min-width: auto;}
         }
     </style>
 </head>
@@ -204,7 +212,14 @@
                 </div>
             </div>
 
-            <div class="crm-kutu">
+            <div class="crm-accordion-header" onclick="toggleCrmKutu()">
+                <h3 style="margin: 0; font-size: 15px; color: var(--metin-ana); display: flex; align-items: center; gap: 8px;">
+                    <span id="crmToggleIcon" style="color: var(--mavi); font-size: 12px; transition: transform 0.3s;">▶</span> 
+                    Sporcu Detay Bilgileri (İletişim, TC, vb.)
+                </h3>
+            </div>
+
+            <div class="crm-kutu" id="crmDetayKutusu" style="display: none;">
                 <div class="crm-item"><label>TC Kimlik No</label><span id="cv_tc">-</span></div>
                 <div class="crm-item"><label>Veli Ad Soyad</label><span id="cv_veli">-</span></div>
                 <div class="crm-item"><label>İletişim (Tel)</label><span id="cv_tel">-</span></div>
@@ -217,9 +232,10 @@
 
             <div class="modal-sekmeler" style="margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--kenarlik); background-color: var(--kart-bg);">
                 <button class="sekme-btn aktif" id="btnSekmeYaris" onclick="profilSekmeDegistir('yaris')">🏁 Yarış Geçmişi</button>
+                <button class="sekme-btn" id="btnSekmeGyaris" onclick="profilSekmeDegistir('gyaris')">🎯 Gelecek Yarışlar</button>
+                <button class="sekme-btn" id="btnSekmeKronometre" onclick="profilSekmeDegistir('kronometre')">⏱️ Derece Alma</button>
                 <button class="sekme-btn" id="btnSekmeAntrenman" onclick="profilSekmeDegistir('antrenman')">🏋️ Antrenman Kayıtları</button>
                 <button class="sekme-btn" id="btnSekmeDevam" onclick="profilSekmeDegistir('devam')">📅 Devam Durumu</button>
-                <button class="sekme-btn" id="btnSekmeGyaris" onclick="profilSekmeDegistir('gyaris')">🎯 Gelecek Yarışlar</button>
             </div>
 
             <div id="profilYarisAlani">
@@ -249,6 +265,47 @@
                 </div>
             </div>
 
+            <div id="profilGyarisAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                <h3 style="margin-top: 0; color: var(--mavi);">Gelecek Yarış Programı</h3>
+                <div id="gyarisListeAlani"><p style='color:var(--metin-alt); padding:10px;'>Bu modül yapım aşamasındadır...</p></div>
+            </div>
+
+            <div id="profilKronometreAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                <h3 style="margin-top: 0; color: var(--bordo);">⏱️ Derece Alma & Kronometre</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+                    <!-- SOL: KRONOMETRE -->
+                    <div style="flex: 1; min-width: 300px; text-align: center; display: flex; flex-direction: column;">
+                        <div style="font-size: 56px; font-weight: bold; font-family: monospace; color: var(--metin-ana); margin: 20px 0;" id="kronoEkran">00:00.00</div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                            <button onclick="kronoBasla()" style="padding: 10px 25px; background-color: var(--basari); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Başla</button>
+                            <button onclick="kronoDur()" style="padding: 10px 25px; background-color: var(--tehlike); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Dur</button>
+                            <button onclick="kronoTur()" style="padding: 10px 25px; background-color: var(--mavi); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Tur</button>
+                            <button onclick="kronoSifirla()" style="padding: 10px 25px; background-color: var(--metin-alt); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Sıfırla</button>
+                        </div>
+                        <ul id="kronoTurlar" style="list-style: none; padding: 0; margin: 0 auto 20px auto; max-width: 400px; width: 100%; max-height: 150px; overflow-y: auto; text-align: left; background: var(--arkaplan); border-radius: 8px; border: 1px solid var(--kenarlik);"></ul>
+                        <div style="display: flex; gap: 10px; justify-content: center; border-top: 1px solid var(--kenarlik); padding-top: 20px; flex-wrap: wrap; margin-top: auto;">
+                            <input type="text" id="kronoBrans" placeholder="Branş (Örn: 50m Serbest)" style="padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); flex: 1; min-width: 150px; outline:none;">
+                            <button onclick="kronoKaydet()" style="padding: 10px 20px; background-color: var(--bordo); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; white-space: nowrap;">💾 Arşive Ekle</button>
+                        </div>
+                        <div id="kronoMesaj" style="display:none; font-weight:bold; font-size:14px; margin-top:10px;"></div>
+                    </div>
+                    
+                    <!-- SAĞ: GEÇMİŞ VE GRAFİK -->
+                    <div class="krono-sag-alan">
+                        <h4 style="margin-top:0; color: var(--metin-ana); font-size: 16px;">Geçmiş Antrenman Dereceleri</h4>
+                        <select id="kronoGecmisBrans" onchange="kronoGecmisCiz()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); margin-bottom: 15px; outline:none; background: #fff; color: var(--metin-ana); font-weight: bold;">
+                            <option value="">-- Branş Seçin --</option>
+                        </select>
+                        <div id="kronoGrafikAlan" style="display: none; margin-bottom: 15px;">
+                            <canvas id="kronoGrafik"></canvas>
+                        </div>
+                        <div id="kronoGecmisListe" style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                            <p style='color:var(--metin-alt); font-size:13px; margin:0;'>Grafik ve listeyi görmek için yukarıdan branş seçin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="profilAntrenmanAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
                 <h3 style="margin-top: 0; color: var(--bordo);">Katıldığı Antrenmanlar</h3>
                 <div id="antrenmanListeAlani"></div>
@@ -257,11 +314,6 @@
             <div id="profilDevamAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
                 <h3 style="margin-top: 0; color: var(--mavi);">Devamsızlık Geçmişi</h3>
                 <div id="devamListesiAlan"></div>
-            </div>
-            
-            <div id="profilGyarisAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
-                <h3 style="margin-top: 0; color: var(--mavi);">Gelecek Yarış Programı</h3>
-                <div id="gyarisListeAlani"><p style='color:var(--metin-alt); padding:10px;'>Bu modül yapım aşamasındadır...</p></div>
             </div>
         </div>
     </div>
@@ -346,6 +398,8 @@
         let aktifSporcuVerisi = []; 
         let grafikObjesi = null; 
         let guncellemeModu = false;
+        let aktifKronoDereceleri = [];
+        let kronoGrafikObjesi = null;
 
         let secilenMesafe = "Tümü";
         let secilenStil = "Tümü";
@@ -432,6 +486,9 @@
             document.getElementById("cv_kan").innerText = s.kan_grubu || "-"; document.getElementById("cv_cinsiyet").innerText = s.cinsiyet || "-";
             document.getElementById("cv_saglik").innerText = s.saglik || "-";
 
+            document.getElementById("crmDetayKutusu").style.display = "none";
+            document.getElementById("crmToggleIcon").style.transform = "rotate(0deg)";
+
             const v2ad = document.getElementById("crm_veli2_ad"), v2tel = document.getElementById("crm_veli2_tel");
             if(s.veli_2_ad && s.veli_2_ad !== '-') {
                 document.getElementById("cv_veli2_ad").innerText = s.veli_2_ad;
@@ -514,9 +571,29 @@
                     });
                     devAlan.innerHTML = dHtml;
                 }
+
+                // Antrenman Derecelerini (Kronometre Geçmişi) İşle
+                aktifKronoDereceleri = data.antrenman_dereceleri || [];
+                let kronoBranslar = [...new Set(aktifKronoDereceleri.map(d => d.brans))];
+                let kbHtml = '<option value="">-- Branş Seçin --</option>';
+                kronoBranslar.forEach(b => kbHtml += `<option value="${b}">${b}</option>`);
+                document.getElementById('kronoGecmisBrans').innerHTML = kbHtml;
+                kronoGecmisCiz(); // Paneli sıfırlar
                 
                 profilSekmeDegistir('yaris'); // Varsayılan olarak yarış sekmesini aç
             } catch (e) { console.error(e); }
+        }
+
+        function toggleCrmKutu() {
+            const kutu = document.getElementById("crmDetayKutusu");
+            const ikon = document.getElementById("crmToggleIcon");
+            if (kutu.style.display === "none" || kutu.style.display === "") {
+                kutu.style.display = "grid"; 
+                ikon.style.transform = "rotate(90deg)";
+            } else {
+                kutu.style.display = "none";
+                ikon.style.transform = "rotate(0deg)";
+            }
         }
 
         // FİLTRE VE GRAFİK MOTORU (Eksiksiz!)
@@ -530,11 +607,11 @@
             });
 
             let mHtml = `<button class="brans-btn aktif" id="m-Tümü" onclick="mesafeSec('Tümü')">Tümü</button>`;
-            [...mesafeler].sort().forEach(m => mHtml += `<button class="brans-btn" id="m-${m}" onclick="mesafeSec('${m}')">${m}</button>`);
+            [...mesafeler].sort().forEach(m => mHtml += `<button class="brans-btn" id="m-${m}" onclick="mesafeSec('${m}')">${m.toLowerCase()}</button>`);
             document.getElementById("mesafeButonlari").innerHTML = mHtml;
 
             let sHtml = `<button class="brans-btn aktif" id="s-Tümü" onclick="stilSec('Tümü')">Tümü</button>`;
-            [...stiller].sort().forEach(s => { let idS = s.replace(/\s+/g, '-'); sHtml += `<button class="brans-btn" id="s-${idS}" onclick="stilSec('${s}')">${s}</button>`; });
+            [...stiller].sort().forEach(s => { let idS = s.replace(/\s+/g, '-'); sHtml += `<button class="brans-btn" id="s-${idS}" onclick="stilSec('${s}')">${s.toLowerCase()}</button>`; });
             document.getElementById("stilButonlari").innerHTML = sHtml;
 
             secilenMesafe = "Tümü"; secilenStil = "Tümü"; filtreleriUygula();
@@ -692,10 +769,12 @@
             document.getElementById('btnSekmeAntrenman').classList.remove('aktif');
             document.getElementById('btnSekmeDevam').classList.remove('aktif');
             document.getElementById('btnSekmeGyaris').classList.remove('aktif');
+            document.getElementById('btnSekmeKronometre').classList.remove('aktif');
             document.getElementById('profilYarisAlani').style.display = 'none';
             document.getElementById('profilAntrenmanAlani').style.display = 'none';
             document.getElementById('profilDevamAlani').style.display = 'none';
             document.getElementById('profilGyarisAlani').style.display = 'none';
+            document.getElementById('profilKronometreAlani').style.display = 'none';
 
             if(sekme === 'yaris') {
                 document.getElementById('btnSekmeYaris').classList.add('aktif');
@@ -706,6 +785,9 @@
             } else if(sekme === 'devam') {
                 document.getElementById('btnSekmeDevam').classList.add('aktif');
                 document.getElementById('profilDevamAlani').style.display = 'block';
+            } else if(sekme === 'kronometre') {
+                document.getElementById('btnSekmeKronometre').classList.add('aktif');
+                document.getElementById('profilKronometreAlani').style.display = 'block';
             } else {
                 document.getElementById('btnSekmeGyaris').classList.add('aktif');
                 document.getElementById('profilGyarisAlani').style.display = 'block';
@@ -771,6 +853,98 @@
                 msg.innerText = "✅ Silindi!"; msg.style.display = "block";
                 setTimeout(() => { msg.style.display="none"; profiliAc(aktifSporcuID, tumSporcular[aktifSporcuID]); }, 1000);
             } catch(e) { msg.innerText="Hata!"; msg.style.display="block"; }
+        }
+
+        // --- KRONOMETRE VE DERECE ALMA MODÜLÜ ---
+        let kronoZaman = 0; let kronoInterval = null; let kronoCalisiyor = false; 
+        let kronoTurlar = []; let sonTurZamani = 0;
+
+        function kronoGuncelleEkran() {
+            let dk = Math.floor(kronoZaman / 60000);
+            let sn = Math.floor((kronoZaman % 60000) / 1000);
+            let msn = Math.floor((kronoZaman % 1000) / 10);
+            document.getElementById('kronoEkran').innerText = 
+                (dk < 10 ? "0"+dk : dk) + ":" + (sn < 10 ? "0"+sn : sn) + "." + (msn < 10 ? "0"+msn : msn);
+        }
+
+        function kronoBasla() {
+            if(kronoCalisiyor) return; kronoCalisiyor = true;
+            let baslangic = Date.now() - kronoZaman;
+            kronoInterval = setInterval(() => { kronoZaman = Date.now() - baslangic; kronoGuncelleEkran(); }, 10);
+        }
+
+        function kronoDur() { kronoCalisiyor = false; clearInterval(kronoInterval); }
+
+        function kronoTur() {
+            if(!kronoCalisiyor && kronoZaman === 0) return;
+            let sureStr = document.getElementById('kronoEkran').innerText;
+            kronoTurlar.push(sureStr);
+            
+            let farkMs = kronoZaman - sonTurZamani;
+            sonTurZamani = kronoZaman;
+            let fDk = Math.floor(farkMs / 60000);
+            let fSn = Math.floor((farkMs % 60000) / 1000);
+            let fMsn = Math.floor((farkMs % 1000) / 10);
+            let farkStr = (fDk > 0 ? fDk + ":" : "") + (fSn < 10 ? "0"+fSn : fSn) + "." + (fMsn < 10 ? "0"+fMsn : fMsn);
+
+            let ul = document.getElementById('kronoTurlar'); let li = document.createElement('li');
+            li.style.padding = "8px 15px"; li.style.borderBottom = "1px solid var(--kenarlik)";
+            li.innerHTML = `<strong>Tur ${kronoTurlar.length}:</strong> <span style="float:right; font-family:monospace; font-size:15px;"><span style="color:var(--metin-alt); margin-right:10px; font-size:12px;">(+${farkStr})</span><b style="color:var(--mavi);">${sureStr}</b></span>`;
+            ul.prepend(li);
+        }
+
+        function kronoSifirla() {
+            kronoDur(); kronoZaman = 0; kronoTurlar = []; sonTurZamani = 0;
+            document.getElementById('kronoTurlar').innerHTML = ""; kronoGuncelleEkran();
+        }
+
+        async function kronoKaydet() {
+            let brans = document.getElementById('kronoBrans').value.trim();
+            let sure = document.getElementById('kronoEkran').innerText;
+            let msg = document.getElementById('kronoMesaj');
+            
+            if(!brans) { msg.innerText = "Lütfen antrenman branşını girin!"; msg.style.color = "var(--tehlike)"; msg.style.display = "block"; return; }
+            if(kronoZaman === 0) { msg.innerText = "Kronometre sıfır, kaydedilecek süre yok!"; msg.style.color = "var(--tehlike)"; msg.style.display = "block"; return; }
+            
+            let d = new Date(); let tarih = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+            msg.innerText = "⏳ Kaydediliyor..."; msg.style.color = "var(--mavi)"; msg.style.display = "block";
+            
+            try {
+                await fetch(`${API_BASE}/antrenman_derece/ekle`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sporcu_id: aktifSporcuID, tarih: tarih, brans: brans, derece: sure }) });
+                msg.innerText = "✅ Derece başarıyla arşive eklendi!"; msg.style.color = "var(--basari)";
+                setTimeout(() => { msg.style.display = "none"; document.getElementById('kronoBrans').value = ""; kronoSifirla(); profiliAc(aktifSporcuID, tumSporcular[aktifSporcuID]); }, 1500);
+            } catch(e) { msg.innerText = "❌ Sunucu hatası oluştu!"; msg.style.color = "var(--tehlike)"; }
+        }
+
+        function kronoGecmisCiz() {
+            let secilen = document.getElementById('kronoGecmisBrans').value;
+            let listeAlan = document.getElementById('kronoGecmisListe');
+            let grafikAlan = document.getElementById('kronoGrafikAlan');
+            let ctx = document.getElementById('kronoGrafik').getContext('2d');
+            
+            if(!secilen) {
+                listeAlan.innerHTML = "<p style='color:var(--metin-alt); font-size:13px; margin:0;'>Grafik ve listeyi görmek için yukarıdan branş seçin.</p>";
+                grafikAlan.style.display = "none";
+                if(kronoGrafikObjesi) kronoGrafikObjesi.destroy();
+                return;
+            }
+            
+            let flt = aktifKronoDereceleri.filter(d => d.brans === secilen);
+            flt.sort((a,b) => parseTRDate(a.tarih) - parseTRDate(b.tarih));
+            
+            let html = "";
+            [...flt].reverse().forEach(d => {
+                html += `<div style="display:flex; justify-content:space-between; padding:10px 5px; border-bottom:1px solid var(--kenarlik); font-size:14px;"><span style="color:var(--metin-alt)">${d.tarih}</span><strong style="color:var(--mavi); font-family:monospace;">${d.derece}</strong></div>`;
+            });
+            listeAlan.innerHTML = html;
+            
+            grafikAlan.style.display = "block";
+            if(kronoGrafikObjesi) kronoGrafikObjesi.destroy();
+            
+            let gData = flt.map(d => sureyiSaniyeyeCevir(d.derece)).filter(x => x > 0);
+            let gLabels = flt.map(d => d.tarih);
+            
+            kronoGrafikObjesi = new Chart(ctx, { type: 'line', data: { labels: gLabels, datasets: [{ data: gData, borderColor:'#0284c7', tension:0.3, fill:true, backgroundColor:'rgba(2, 132, 199, 0.1)', borderWidth:2, pointRadius:4 }] }, options: { scales: { y: { reverse: true, ticks: { callback: function(val) { return formataCevir(val); } } }, x: { display: false } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ` Derece: ${flt[c.dataIndex].derece}`; } } } } } });
         }
     </script>
 </body>
