@@ -214,7 +214,7 @@
 
         <div id="gorunumProfil" style="display: none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <button class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumGrup')">⬅ Listeye Dön</button>
+                <button id="btnProfilGeri" class="tepe-buton" style="margin-bottom:0;" onclick="gorunumDegistir('gorunumGrup')">⬅ Listeye Dön</button>
                 <a href="menu.html" class="btn-ana">🏠 Menü</a>
             </div>
             <div class="profil-header">
@@ -533,8 +533,16 @@
                 // Eğer URL'den "id" parametresi ile gelinmişse (Örn: Gelecek yarışlardan tıklanmışsa) o profili direkt aç
                 const urlParams = new URLSearchParams(window.location.search);
                 const gelenId = urlParams.get('id');
+                const kaynak = urlParams.get('kaynak');
                 if (gelenId && tumSporcular[gelenId]) {
                     profiliAc(gelenId, tumSporcular[gelenId]);
+                    
+                    // Eğer Gelecek Yarışlar (gyaris) sayfasından gelindiyse geri butonunu oraya yönlendir
+                    if (kaynak === 'gyaris') {
+                        const btnGeri = document.getElementById("btnProfilGeri");
+                        btnGeri.innerText = "⬅ Gelecek Yarışlara Dön";
+                        btnGeri.onclick = () => window.location.href = "gyaris.html";
+                    }
                 }
             } catch (hata) { document.getElementById("listeAlani").innerHTML = "<p style='color:var(--tehlike); font-weight:bold; padding: 10px;'>API Bağlantı Hatası! Python sunucusu çalışıyor mu?</p>"; }
         };
