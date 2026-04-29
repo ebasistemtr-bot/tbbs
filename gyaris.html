@@ -277,7 +277,11 @@
                 if(res.ok && !data.hata) {
                     alert("✅ " + data.mesaj);
                     window.location.reload(); // Yükleme başarılıysa sayfayı yenile ve verileri getir
-                } else { alert("❌ Hata: " + (data.hata || "Bilinmeyen hata.")); }
+                } else { 
+                    // Sunucu kütüphane eksikliği vb. yapısal bir hata (detail) dönerse onu da yakala
+                    let detayliHata = data.hata || (data.detail ? "Sistem Hatası (python-multipart kütüphanesi eksik olabilir): " + JSON.stringify(data.detail) : "Bilinmeyen hata.");
+                    alert("❌ Hata: " + detayliHata); 
+                }
             } catch(e) {
                 alert("⚠️ Sunucu bağlantı hatası!");
             } finally {
