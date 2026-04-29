@@ -709,6 +709,7 @@
                                 <tr style="background-color: #f8fafc; border-bottom: 2px solid var(--kenarlik);">
                                     <th style="padding: 10px; color: var(--metin-ana);">Program</th>
                                     <th style="padding: 10px; color: var(--metin-ana);">Branş</th>
+                                    <th style="padding: 10px; color: var(--metin-ana); text-align:center;">Start (Seri/Kulvar)</th>
                                     <th style="padding: 10px; color: var(--metin-alt);">Eski Derece</th>
                                     <th style="padding: 10px; color: var(--bordo); text-align:center;">🇹🇷 Baraj</th>
                                     <th style="padding: 10px; color: var(--mavi); text-align:center;">🎯 Yeni Hedef</th>
@@ -727,10 +728,12 @@
                             if (c && BARAJLAR[c] && BARAJLAR[c][dogumYili] && BARAJLAR[c][dogumYili][bransAdi]) {
                                 barajDerecesi = BARAJLAR[c][dogumYili][bransAdi];
                             }
+                            let startBilgi = (y.Seri && y.Seri !== "-") ? `<span style="color:var(--mavi); font-weight:bold;">${y.Seri}</span><br><span style="font-size:11px; color:var(--metin-alt);">${y.Kulvar}</span>` : `<span style="color:#cbd5e1;">-</span>`;
 
                             gHtml += `<tr style="border-bottom: 1px solid var(--kenarlik); transition: 0.2s;" onmouseover="this.style.backgroundColor='#f0f9ff'" onmouseout="this.style.backgroundColor='transparent'">
                                 <td style="padding: 10px;"><strong>${y["Gün ve Seans"]}</strong></td>
                                 <td style="padding: 10px; font-weight:600;">${y["Branş"]}</td>
+                                <td style="padding: 10px; text-align:center; line-height:1.2;">${startBilgi}</td>
                                 <td style="padding: 10px; color: var(--metin-alt);">${y["Kayıtlı Eski Derece"]}</td>
                                 <td style="padding: 10px; color: var(--bordo); font-weight: bold; text-align: center; background-color: #fff1f2;">${barajDerecesi}</td>
                                 <td style="padding: 10px; text-align:center;">

@@ -69,6 +69,7 @@
         <div class="baslik-alani">
             <h1>⏱️ Antrenör Yarış Paneli</h1>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="startListesiCek()" class="btn-ana" style="background: #eff6ff; color: var(--lacivert); border: 1px solid #bfdbfe; cursor: pointer; padding: 10px 15px;">🚦 Start Listesi Çek</button>
                 <button onclick="document.getElementById('pdfInput').click()" class="btn-ana" style="background: white; color: var(--mavi); border: none; cursor: pointer; padding: 10px 15px;">📄 PDF Yükle</button>
                 <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="pdfYukle(event)">
                 <a href="menu.html" class="btn-ana">Ana Menü</a>
@@ -88,8 +89,8 @@
     <!-- PDF YÜKLEME EKRANI -->
     <div id="pdfYuklemeEkrani" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: white; backdrop-filter: blur(5px);">
         <div style="font-size: 50px; display: inline-block; animation: donme 1.5s linear infinite;">⏳</div>
-        <h2 style="margin-top: 20px; text-align: center;">PDF Okunuyor ve Eşleştiriliyor...</h2>
-        <p style="color: #cbd5e1; text-align: center; font-size: 14px; max-width: 80%;">Lütfen bekleyin, tablo ayrıştırılıp Google Sheets'e yazılıyor.</p>
+        <h2 id="yuklemeBaslik" style="margin-top: 20px; text-align: center;">İşlem Yapılıyor...</h2>
+        <p id="yuklemeAciklama" style="color: #cbd5e1; text-align: center; font-size: 14px; max-width: 80%;">Lütfen bekleyin, veriler işleniyor.</p>
         <style>@keyframes donme { 100% { transform: rotate(360deg); } }</style>
     </div>
 
@@ -202,13 +203,15 @@
                             return (a.Sporcu_Adi || "").localeCompare(b.Sporcu_Adi || "", 'tr');
                         });
 
-                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th style="text-align:center;">Sonuç (Derece)</th><th style="text-align:center;">İşlem</th></tr></thead><tbody>`;
+                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th style="text-align:center;">Start (Seri/Kulvar)</th><th style="text-align:center;">Sonuç (Derece)</th><th style="text-align:center;">İşlem</th></tr></thead><tbody>`;
                         katilimcilar.forEach((k, index) => {
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
                             let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
+                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<span style="color:var(--mavi); font-weight:bold;">${k.Seri}</span><br><span style="font-size:11px; color:var(--metin-alt);">${k.Kulvar}</span>` : `<span style="color:#cbd5e1;">-</span>`;
                             tabloHTML += `<tr>
                             <td data-label="Sporcu Adı"><a href="sporcu_yonetim.html?id=${k.Sporcu_ID}&kaynak=gyaris" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}</td>
                                 <td data-label="Eski Derece" style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
+                                <td data-label="Start Bilgisi" style="text-align:center; line-height:1.2;">${startBilgi}</td>
                                 <td data-label="Sonuç" style="text-align:center;">
                                     <input type="text" id="${inpId}" class="sonuc-input" value="${k.Hedef || ''}" placeholder="00:00.00">
                                 </td>
@@ -262,6 +265,8 @@
             const dosya = event.target.files[0];
             if(!dosya) return;
             
+            document.getElementById('yuklemeBaslik').innerText = "PDF Okunuyor ve Eşleştiriliyor...";
+            document.getElementById('yuklemeAciklama').innerText = "Lütfen bekleyin, tablo ayrıştırılıp Google Sheets'e yazılıyor.";
             document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
             
             const formData = new FormData();
@@ -287,6 +292,36 @@
             } finally {
                 document.getElementById('pdfYuklemeEkrani').style.display = 'none';
                 event.target.value = ""; // Aynı dosyayı tekrar seçebilmek için inputu sıfırla
+            }
+        }
+
+        // YENİ EKLENEN START LİSTESİ ÇEKME FONKSİYONU
+        async function startListesiCek() {
+            let cevap = prompt("Yarışın klasör numarasını (Örn: 29) veya tam adresini girin:\n(Bu işlem o sayfadaki tüm Start Listelerini okuyup kulübümüzün sporcularıyla otomatik eşleştirir)");
+            if(!cevap || cevap.trim() === "") return;
+
+            document.getElementById('yuklemeBaslik').innerText = "Start Listeleri Taranıyor 🚦";
+            document.getElementById('yuklemeAciklama').innerText = "Web sitesindeki PDF'ler indirilip okunuyor ve sporcularımızın eşleşmeleri yapılıyor. Bu işlem 10-20 saniye sürebilir, lütfen bekleyin...";
+            document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
+
+            try {
+                const res = await fetch(`${API_BASE}/gelecek_yaris/start_listesi_cek`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url_veya_no: cevap })
+                });
+                const data = await res.json();
+                
+                if(res.ok && !data.hata) {
+                    alert("✅ " + data.mesaj);
+                    window.location.reload(); 
+                } else { 
+                    alert("❌ Hata: " + (data.hata || "Bilinmeyen hata.")); 
+                }
+            } catch(e) {
+                alert("⚠️ Sunucu bağlantı hatası!");
+            } finally {
+                document.getElementById('pdfYuklemeEkrani').style.display = 'none';
             }
         }
     </script>
