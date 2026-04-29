@@ -206,10 +206,7 @@
         }
 
         #kurButonuKutusu {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
             background-color: #9f1239;
             /* Bordo */
             color: white;
@@ -227,12 +224,12 @@
 
         @keyframes asagidanGel {
             from {
-                bottom: -50px;
+                transform: translateY(30px);
                 opacity: 0;
             }
 
             to {
-                bottom: 20px;
+                transform: translateY(0);
                 opacity: 1;
             }
         }
