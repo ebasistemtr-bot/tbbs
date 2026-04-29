@@ -1,4 +1,4 @@
-const CACHE_NAME = "ty-veri-ambari-v6";
+const CACHE_NAME = "TBBSY-v6";
 
 self.addEventListener("install", (e) => {
     console.log("[Service Worker] Motor Kuruluyor... Versiyon:", CACHE_NAME);
