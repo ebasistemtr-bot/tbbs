@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trabzon Büyükşehir Belediye Spor Kulübü | Yükleniyor...</title>
     <style>
         /* --- BEYAZ / AYDINLIK TEMA --- */
         :root {
-            --arkaplan: #f0f2f5; 
-            --kart-bg: #ffffff; 
-            --bordo: #9f1239; 
-            --mavi: #0284c7; 
-            --metin-ana: #1e293b; 
-            --metin-alt: #64748b; 
+            --arkaplan: #f0f2f5;
+            --kart-bg: #ffffff;
+            --bordo: #9f1239;
+            --mavi: #0284c7;
+            --metin-ana: #1e293b;
+            --metin-alt: #64748b;
         }
 
         body {
@@ -34,12 +36,12 @@
             max-width: 180px;
             margin-bottom: 20px;
             /* Beyaz arka planı yok edip sayfaya yediren sihirli kod: */
-            mix-blend-mode: multiply; 
+            mix-blend-mode: multiply;
             /* Kutu görünümü veren gölge ve kenarlıkları tamamen kaldırdık */
             box-shadow: none;
             border-radius: 0;
         }
-        
+
 
         h1 {
             color: var(--bordo);
@@ -64,8 +66,15 @@
             border: 1px dashed var(--mavi);
         }
 
-        .vurgu { color: var(--mavi); font-weight: bold; }
-        .gulen-yuz { color: var(--bordo); font-weight: bold; }
+        .vurgu {
+            color: var(--mavi);
+            font-weight: bold;
+        }
+
+        .gulen-yuz {
+            color: var(--bordo);
+            font-weight: bold;
+        }
 
         /* HAVUZ VE YÜZÜCÜ ANİMASYONU */
         .havuz-kapsayici {
@@ -96,25 +105,53 @@
             font-size: 40px;
             position: absolute;
             top: 5px;
-            left: 2%; /* Başlangıç noktası */
+            left: 2%;
+            /* Başlangıç noktası */
             z-index: 10;
             /* Yüzücü turlar atıyor */
-            animation: turlama 6s infinite ease-in-out; 
-            transition: all 1s ease; /* Bitişe çekerken yumuşak geçiş için */
+            animation: turlama 6s infinite ease-in-out;
+            transition: all 1s ease;
+            /* Bitişe çekerken yumuşak geçiş için */
         }
 
         /* YÜZME TURLARI (GİT-GEL ANİMASYONU) - DÜZELTİLMİŞ YÖNLER */
         @keyframes turlama {
-            0%   { left: 2%; transform: scaleX(-1); } /* Başlangıç: Sağa doğru yüzüyor, sağa bakıyor */
-            45%  { left: 88%; transform: scaleX(-1); } /* Sağ duvara ulaştı, hala sağa bakıyor */
-            50%  { left: 88%; transform: scaleX(1); } /* Dönüş: Sola doğru yüzmek için sola döndü */
-            95%  { left: 2%; transform: scaleX(1); } /* Geri dönüyor: Sola doğru yüzüyor, sola bakıyor */
-            100% { left: 2%; transform: scaleX(-1); } /* Tekrar sağa dönmek için sağa döndü */
+            0% {
+                left: 2%;
+                transform: scaleX(-1);
+            }
+
+            /* Başlangıç: Sağa doğru yüzüyor, sağa bakıyor */
+            45% {
+                left: 88%;
+                transform: scaleX(-1);
+            }
+
+            /* Sağ duvara ulaştı, hala sağa bakıyor */
+            50% {
+                left: 88%;
+                transform: scaleX(1);
+            }
+
+            /* Dönüş: Sola doğru yüzmek için sola döndü */
+            95% {
+                left: 2%;
+                transform: scaleX(1);
+            }
+
+            /* Geri dönüyor: Sola doğru yüzüyor, sola bakıyor */
+            100% {
+                left: 2%;
+                transform: scaleX(-1);
+            }
+
+            /* Tekrar sağa dönmek için sağa döndü */
         }
 
         /* GİRİŞ BUTONU (Başlangıçta Gizli) */
         .btn-giris {
-            display: none; /* Sunucu uyanana kadar gizli */
+            display: none;
+            /* Sunucu uyanana kadar gizli */
             background-color: var(--bordo);
             color: white;
             text-decoration: none;
@@ -134,13 +171,78 @@
             transform: translateY(-3px) scale(1.05);
         }
 
-        @keyframes belirmeye { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes belirmeye {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* YÜKLENİYOR BİLGİSİ */
-        #durumMetni { font-size: 14px; color: var(--mavi); font-weight: bold; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        #durumMetni {
+            font-size: 14px;
+            color: var(--mavi);
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        #kurButonuKutusu {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #9f1239;
+            /* Bordo */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: none;
+            /* İlk başta gizli, telefon uygunsa açılacak */
+            z-index: 9999;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            animation: asagidanGel 0.5s ease-out;
+        }
+
+        @keyframes asagidanGel {
+            from {
+                bottom: -50px;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
     </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <link rel="apple-touch-icon" href="logo1.png">
+
 </head>
+
 <body>
 
     <img src="logo.png" alt="Kulüp Logosu" class="logo-img" onerror="this.style.display='none'">
@@ -148,7 +250,8 @@
     <h1>Trabzon Büyükşehir Belediye Spor Kulübü</h1>
 
     <div class="alt-metin">
-        Deneme sürümü olması sebebi ile veriler biraz gecikebilir. Sistem tam kapasite çalıştığında hızlı olacak <span class="gulen-yuz">;)</span><br>
+        Deneme sürümü olması sebebi ile veriler biraz gecikebilir. Sistem tam kapasite çalıştığında hızlı olacak <span
+            class="gulen-yuz">;)</span><br>
         Motorlar ısınana kadar, antrenmanını takip edelim...
     </div>
 
@@ -158,13 +261,13 @@
     </div>
 
     <div id="durumMetni">Motorlar ısıtılıyor, sistem uyandırılıyor... Lütfen bekleyin.</div>
-    
+
     <a href="menu.html" class="btn-giris" id="girisButonu">🚀 Sistem Hazır - Giriş Yap</a>
 
     <script>
         // Render'daki API Adresimiz (Buraya kendi API'nin en hızlı yanıt veren /sporcular veya kök dizinini yaz)
-        const API_URL = "https://trabzon-yuzme-api.onrender.com/api/sporcular"; 
-        
+        const API_URL = "https://trabzon-yuzme-api.onrender.com/api/sporcular";
+
         const yuzucu = document.getElementById("Sporcu");
         const buton = document.getElementById("girisButonu");
         const durumMetni = document.getElementById("durumMetni");
@@ -177,7 +280,7 @@
             try {
                 // Sunucuya sesleniyoruz
                 const response = await fetch(API_URL);
-                
+
                 // Eğer sunucu uyanmış ve 200 OK yanıtı vermişse
                 if (response.ok) {
                     sistemUyandi();
@@ -194,10 +297,10 @@
         // Sunucu uyandığında çalışacak görsel şölen
         function sistemUyandi() {
             radarDurdur = true; // Radarı kapat
-            
+
             // 1. Animasyonu durdur ve yüzücüyü bitiş çizgisine (sağa) sabitle
             yuzucu.style.animation = "none";
-            yuzucu.style.left = "88%"; 
+            yuzucu.style.left = "88%";
             yuzucu.style.transform = "scaleX(1)"; // Yüzü sağa dönük kalsın
 
             // 2. Metni güncelle
@@ -221,6 +324,50 @@
             }
         }, 40000);
 
+        let deferredPrompt;
+        const kurButonu = document.getElementById('kurButonuKutusu');
+
+        // Service Worker'ı sisteme kaydet
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log("🚀 Service Worker aktif!");
+            });
+        }
+
+        // Cihaz PWA kurulumunu destekliyorsa bu olay tetiklenir
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Chrome'un kendi çirkin kurulum ekranını durdur
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Bizim o şık bordo butonumuzu göster
+            kurButonu.style.display = 'block';
+
+            // TAM İSTEDİĞİN GİBİ: 10 Saniye sonra kullanıcıyı darlamamak için gizle
+            setTimeout(() => {
+                kurButonu.style.display = 'none';
+            }, 10000);
+        });
+
+        async function uygulamayiKur() {
+            if (deferredPrompt) {
+                // Kurulum ekranını tetikle
+                deferredPrompt.prompt();
+                // Kullanıcının kararını bekle
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('✅ Patron, uygulama başarıyla telefona kuruldu!');
+                }
+                deferredPrompt = null;
+                // Kurulum bittikten sonra butonu yok et
+                kurButonu.style.display = 'none';
+            }
+        }
+
     </script>
+    <div id="kurButonuKutusu" onclick="uygulamayiKur()">
+        📲 Uygulamayı Telefona Kur
+    </div>
 </body>
+
 </html>
