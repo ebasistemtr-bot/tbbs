@@ -23,6 +23,8 @@
         .arama-kutusu { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--kenarlik); background-color: #fff; color: var(--metin-ana); margin-bottom: 15px; outline: none; }
         .btn-ekle { background-color: var(--bordo); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; transition: 0.3s; }
         .btn-ekle:hover { filter: brightness(1.2); }
+        .btn-manuel-ekle { background-color: var(--mavi); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px; }
+        .btn-manuel-ekle:hover { filter: brightness(1.1); }
         .sporcu-listesi { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;}
         .sporcu-listesi::-webkit-scrollbar { width: 6px; }
         .sporcu-listesi::-webkit-scrollbar-thumb { background-color: var(--kenarlik); border-radius: 10px; }
@@ -283,7 +285,8 @@
                 <div id="gyarisListeAlani"><p style='color:var(--metin-alt); padding:10px;'>Bu modül yapım aşamasındadır...</p></div>
             </div>
 
-            <div id="profilKronometreAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px;">
+            <div id="profilKronometreAlani" style="display:none; background-color: var(--kart-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--kenarlik); box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px; position: relative;">
+                <button onclick="manuelDereceModalAc()" class="btn-manuel-ekle" style="position: absolute; top: 20px; right: 25px;">📝 Manuel Ekle</button>
                 <h3 style="margin-top: 0; color: var(--bordo);">⏱️ Derece Alma & Kronometre</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 30px;">
                     <!-- SOL: KRONOMETRE -->
@@ -429,6 +432,38 @@
                     <div class="modal-derece-liste" id="modalGecmisListe"></div>
                     <div id="mesajSil" style="display:none; text-align:center; margin-top:10px; color:var(--tehlike); font-weight:bold;"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUEL DERECE EKLE MODALI -->
+    <div class="modal-arkaplan" id="manuelDereceModal">
+        <div class="modal-kutu" style="width: 400px;">
+            <div class="modal-ust">
+                <h3 style="color: var(--bordo); margin: 0;">📝 Manuel Derece Ekle</h3>
+                <button class="btn-kapat" onclick="manuelDereceModalKapat()">✖</button>
+            </div>
+            <div class="modal-icerik">
+                <div class="form-grup" style="margin-bottom: 15px;">
+                    <label>Tarih:</label>
+                    <input type="date" id="manuelTarih">
+                </div>
+                <div class="form-grup" style="margin-bottom: 15px;">
+                    <label>Branş Seçin:</label>
+                    <select id="manuelBrans">
+                        <optgroup label="Serbest"><option value="50m Serbest">50m Serbest</option><option value="100m Serbest">100m Serbest</option><option value="200m Serbest">200m Serbest</option><option value="400m Serbest">400m Serbest</option><option value="800m Serbest">800m Serbest</option><option value="1500m Serbest">1500m Serbest</option></optgroup>
+                        <optgroup label="Sırtüstü"><option value="50m Sırtüstü">50m Sırtüstü</option><option value="100m Sırtüstü">100m Sırtüstü</option><option value="200m Sırtüstü">200m Sırtüstü</option></optgroup>
+                        <optgroup label="Kurbağalama"><option value="50m Kurbağalama">50m Kurbağalama</option><option value="100m Kurbağalama">100m Kurbağalama</option><option value="200m Kurbağalama">200m Kurbağalama</option></optgroup>
+                        <optgroup label="Kelebek"><option value="50m Kelebek">50m Kelebek</option><option value="100m Kelebek">100m Kelebek</option><option value="200m Kelebek">200m Kelebek</option></optgroup>
+                        <optgroup label="Karışık"><option value="100m Karışık">100m Karışık</option><option value="200m Karışık">200m Karışık</option><option value="400m Karışık">400m Karışık</option></optgroup>
+                    </select>
+                </div>
+                <div class="form-grup" style="margin-bottom: 20px;">
+                    <label>Derece (Örn: 01:05.45 veya 35.80):</label>
+                    <input type="text" id="manuelDereceGirdisi" placeholder="00:00.00">
+                </div>
+                <button class="btn-kaydet" id="btnManuelKaydet" onclick="manuelDereceKaydet()">💾 Arşive Ekle</button>
+                <div id="manuelMesaj" style="display:none; text-align:center; margin-top:10px; font-weight:bold;"></div>
             </div>
         </div>
     </div>
@@ -1078,6 +1113,79 @@
             let gLabels = flt.map(d => d.tarih);
             
             kronoGrafikObjesi = new Chart(ctx, { type: 'line', data: { labels: gLabels, datasets: [{ data: gData, borderColor:'#0284c7', tension:0.3, fill:true, backgroundColor:'rgba(2, 132, 199, 0.1)', borderWidth:2, pointRadius:4 }] }, options: { scales: { y: { reverse: true, ticks: { callback: function(val) { return formataCevir(val); } } }, x: { display: false } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ` Derece: ${flt[c.dataIndex].derece}`; } } } } } });
+        }
+
+        // --- MANUEL DERECE EKLEME ---
+        function manuelDereceModalAc() {
+            document.getElementById("manuelDereceModal").style.display = "flex";
+            const bugun = new Date();
+            const formatliBugun = new Date(bugun.getTime() - (bugun.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
+            document.getElementById("manuelTarih").value = formatliBugun;
+            document.getElementById("manuelDereceGirdisi").value = "";
+            document.getElementById("manuelMesaj").style.display = "none";
+        }
+
+        function manuelDereceModalKapat() {
+            document.getElementById("manuelDereceModal").style.display = "none";
+        }
+
+        async function manuelDereceKaydet() {
+            const tarihVal = document.getElementById("manuelTarih").value;
+            const brans = document.getElementById("manuelBrans").value;
+            const derece = document.getElementById("manuelDereceGirdisi").value.trim();
+            const msg = document.getElementById("manuelMesaj");
+            const btn = document.getElementById("btnManuelKaydet");
+
+            if (!derece || !tarihVal) {
+                msg.innerText = "⚠️ Tarih ve derece alanları zorunludur!";
+                msg.style.color = "var(--tehlike)";
+                msg.style.display = "block";
+                return;
+            }
+
+            const [yil, ay, gun] = tarihVal.split("-");
+            const turkceTarih = `${gun}.${ay}.${yil}`;
+
+            btn.innerText = "⏳ Kaydediliyor...";
+            btn.disabled = true;
+            msg.style.display = "none";
+
+            try {
+                const response = await fetch(`${API_BASE}/antrenman_derece/ekle`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sporcu_id: aktifSporcuID,
+                        tarih: turkceTarih,
+                        brans: brans,
+                        derece: derece
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    msg.innerText = "✅ " + data.mesaj;
+                    msg.style.color = "var(--basari)";
+                    msg.style.display = "block";
+                    setTimeout(() => {
+                        manuelDereceModalKapat();
+                        // Kayıt sonrası verileri ekranda yenile
+                        profiliAc(aktifSporcuID, tumSporcular[aktifSporcuID]);
+                    }, 1500);
+                } else {
+                    msg.innerText = "❌ Hata: " + (data.hata || "Bilinmeyen hata");
+                    msg.style.color = "var(--tehlike)";
+                    msg.style.display = "block";
+                }
+            } catch (error) {
+                msg.innerText = "⚠️ Sunucu bağlantı hatası!";
+                msg.style.color = "var(--tehlike)";
+                msg.style.display = "block";
+            } finally {
+                btn.innerText = "💾 Arşive Ekle";
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
