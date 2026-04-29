@@ -1,4 +1,4 @@
-const CACHE_NAME = "TBBSY-v6";
+const CACHE_NAME = "TBBSY-v7";
 
 self.addEventListener("install", (e) => {
     console.log("[Service Worker] Motor Kuruluyor... Versiyon:", CACHE_NAME);
@@ -24,8 +24,17 @@ self.addEventListener("activate", (e) => {
 });
 
 // Çevrimdışı (offline) çalışmayı desteklemek için basit bir ağ yakalayıcı
+// YENİ NESİL: Ağ öncelikli (Network-First) ve Otomatik Güncelleyen Strateji
 self.addEventListener("fetch", (e) => {
+    // Sadece "http/https" ile başlayan (sitenize ait) istekleri yakala
+    if (!e.request.url.startsWith('http')) return;
+    
     e.respondWith(
-        fetch(e.request).catch(() => caches.match(e.request))
+        fetch(e.request).then((response) => {
+            // İnternet varsa YENİ dosyayı indir, anında önbelleği güncelle (Kullanıcı hep en yeniyi görsün)
+            const kopya = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, kopya));
+            return response;
+        }).catch(() => caches.match(e.request)) // İnternet kesilirse (Offline) önbellekteki son kopyayı ver
     );
 });
