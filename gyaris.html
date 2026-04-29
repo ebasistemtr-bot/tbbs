@@ -37,6 +37,9 @@
         
         .kiz-rozet { background: #fdf2f8; color: var(--pembe); border: 1px solid #fbcfe8; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 5px; }
         .erkek-rozet { background: #eff6ff; color: var(--lacivert); border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 5px; }
+
+        .isim-link { color: var(--metin-ana); text-decoration: none; transition: 0.2s; cursor: pointer; }
+        .isim-link:hover { color: var(--mavi); text-decoration: underline; }
         
         .yukleniyor { text-align: center; padding: 40px; color: var(--mavi); font-size: 18px; font-weight: bold; }
 
@@ -192,7 +195,7 @@
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
                             let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
                             tabloHTML += `<tr>
-                                <td data-label="Sporcu Adı"><strong>${k.Sporcu_Adi}</strong> ${rozet}</td>
+                            <td data-label="Sporcu Adı"><a href="sporcu_yonetim.html?id=${k.Sporcu_ID}" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}</td>
                                 <td data-label="Eski Derece" style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
                                 <td data-label="Sonuç" style="text-align:center;">
                                     <input type="text" id="${inpId}" class="sonuc-input" value="${k.Hedef || ''}" placeholder="00:00.00">

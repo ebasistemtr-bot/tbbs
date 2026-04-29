@@ -529,6 +529,13 @@
                 tumSporcular = data.sporcular; 
                 solListeyiCiz(tumSporcular); 
                 takimGruplariCiz(tumSporcular);
+                
+                // Eğer URL'den "id" parametresi ile gelinmişse (Örn: Gelecek yarışlardan tıklanmışsa) o profili direkt aç
+                const urlParams = new URLSearchParams(window.location.search);
+                const gelenId = urlParams.get('id');
+                if (gelenId && tumSporcular[gelenId]) {
+                    profiliAc(gelenId, tumSporcular[gelenId]);
+                }
             } catch (hata) { document.getElementById("listeAlani").innerHTML = "<p style='color:var(--tehlike); font-weight:bold; padding: 10px;'>API Bağlantı Hatası! Python sunucusu çalışıyor mu?</p>"; }
         };
 
