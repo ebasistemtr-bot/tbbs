@@ -196,10 +196,21 @@
                     });
                     
                     if(katilimcilar.length > 0) {
-                        // Sıralama Kuralı: Önce Kadın, Sonra Doğum Yılı (Büyük/Yakın Yıl Önce), Sonra İsim Sırası
+                        // YENİ AKILLI SIRALAMA: Kadın -> Küçük Yaş -> Seri Sırası -> Kulvar Sırası -> İsim
                         katilimcilar.sort((a,b) => {
                             if(a.Cinsiyet !== b.Cinsiyet) return a.Cinsiyet === "Kadın" ? -1 : 1;
                             if(a.Dogum_Yili !== b.Dogum_Yili) return b.Dogum_Yili - a.Dogum_Yili;
+                            
+                            // Seri numaralarını (Örn: "2. Seri") içinden sayıyı çek, yoksa 999 yap en sona at
+                            let seriA = parseInt((a.Seri || "").match(/\d+/)) || 999;
+                            let seriB = parseInt((b.Seri || "").match(/\d+/)) || 999;
+                            if(seriA !== seriB) return seriA - seriB;
+                            
+                            // Aynı seridelerse kulvarlarına bak
+                            let kulvarA = parseInt((a.Kulvar || "").match(/\d+/)) || 999;
+                            let kulvarB = parseInt((b.Kulvar || "").match(/\d+/)) || 999;
+                            if(kulvarA !== kulvarB) return kulvarA - kulvarB;
+
                             return (a.Sporcu_Adi || "").localeCompare(b.Sporcu_Adi || "", 'tr');
                         });
 
@@ -207,7 +218,7 @@
                         katilimcilar.forEach((k, index) => {
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
                             let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
-                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<div style="font-size: 12px; color: #ea580c; margin-top: 4px; font-weight: 600;">${k.Seri} / ${k.Kulvar}</div>` : '';
+                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<div style="font-size: 12px; color: #0d9488; margin-top: 4px; font-weight: 600;">${k.Seri} / ${k.Kulvar}</div>` : '';
                             tabloHTML += `<tr>
                             <td data-label="Sporcu Adı">
                                 <a href="sporcu_yonetim.html?id=${k.Sporcu_ID}&kaynak=gyaris" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}
