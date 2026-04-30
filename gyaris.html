@@ -207,7 +207,7 @@
                         katilimcilar.forEach((k, index) => {
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
                             let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
-                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<div style="font-size: 12px; color: var(--mavi); margin-top: 4px; font-weight: 600;">${k.Seri} / ${k.Kulvar}</div>` : '';
+                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<div style="font-size: 12px; color: #ea580c; margin-top: 4px; font-weight: 600;">${k.Seri} / ${k.Kulvar}</div>` : '';
                             tabloHTML += `<tr>
                             <td data-label="Sporcu Adı">
                                 <a href="sporcu_yonetim.html?id=${k.Sporcu_ID}&kaynak=gyaris" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}
@@ -267,6 +267,11 @@
             const dosya = event.target.files[0];
             if(!dosya) return;
             
+            if(!confirm("⚠️ DİKKAT: Yeni bir yarış PDF'i yüklediğinizde, sistemdeki ESKİ yarış verileri tamamen SİLİNİR ve yenileri üzerine yazılır.\n\nİşleme devam etmek istiyor musunuz?")) {
+                event.target.value = ""; // Aynı dosyayı tekrar seçebilmek için inputu sıfırla
+                return;
+            }
+
             document.getElementById('yuklemeBaslik').innerText = "PDF Okunuyor ve Eşleştiriliyor...";
             document.getElementById('yuklemeAciklama').innerText = "Lütfen bekleyin, tablo ayrıştırılıp Google Sheets'e yazılıyor.";
             document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
@@ -299,6 +304,10 @@
 
         // YENİ EKLENEN START LİSTESİ ÇEKME FONKSİYONU
         async function startListesiCek() {
+            if(!confirm("⚠️ DİKKAT: Yeni bir Start Listesi çektiğinizde, listedeki mevcut seri ve kulvar bilgileri yenileriyle değiştirilecektir.\n\nİşleme devam etmek istiyor musunuz?")) {
+                return;
+            }
+
             let cevap = prompt("Yarışın klasör numarasını (Örn: 29) veya tam adresini girin:\n(Bu işlem o sayfadaki tüm Start Listelerini okuyup kulübümüzün sporcularıyla otomatik eşleştirir)");
             if(!cevap || cevap.trim() === "") return;
 

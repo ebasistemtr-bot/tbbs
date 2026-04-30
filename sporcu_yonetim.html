@@ -704,7 +704,7 @@
                         const YARIS_SIRASI = { "400M KARIŞIK": 1, "100M SERBEST": 2, "50M KELEBEK": 3, "200M KURBAĞALAMA": 4, "400M SERBEST": 5, "200M KELEBEK": 6, "50M KURBAĞALAMA": 7, "100M SIRTÜSTÜ": 8, "800M SERBEST": 9, "200M KARIŞIK": 10, "50M SIRTÜSTÜ": 11, "200M SERBEST": 12, "100M KURBAĞALAMA": 13, "100M KELEBEK": 14, "50M SERBEST": 15, "200M SIRTÜSTÜ": 16, "1500M SERBEST": 17 };
                         gData.yarislar.sort((a,b) => { let sa = YARIS_SIRASI[(a["Branş"]||"").toUpperCase()] || 99; let sb = YARIS_SIRASI[(b["Branş"]||"").toUpperCase()] || 99; return sa - sb; });
                         
-                        let gHtml = `<div style="overflow-x: auto;"><table class="gyaris-tablo" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; min-width: 600px; font-size: 14px;">
+                        let gHtml = `<div><table class="gyaris-tablo" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; font-size: 14px;">
                             <thead>
                                 <tr style="background-color: #f8fafc; border-bottom: 2px solid var(--kenarlik);">
                                     <th style="padding: 10px; color: var(--metin-ana);">Program</th>
@@ -727,7 +727,7 @@
                             if (c && BARAJLAR[c] && BARAJLAR[c][dogumYili] && BARAJLAR[c][dogumYili][bransAdi]) {
                                 barajDerecesi = BARAJLAR[c][dogumYili][bransAdi];
                             }
-                            let startBilgi = (y.Seri && y.Seri !== "-") ? `<div style="font-size: 12px; color: var(--mavi); margin-top: 4px; font-weight: 600;">${y.Seri} / ${y.Kulvar}</div>` : '';
+                                let startBilgi = (y.Seri && y.Seri !== "-") ? `<div style="font-size: 12px; color: #ea580c; margin-top: 4px; font-weight: 600;">${y.Seri} / ${y.Kulvar}</div>` : '';
 
                             gHtml += `<tr style="border-bottom: 1px solid var(--kenarlik); transition: 0.2s;" onmouseover="this.style.backgroundColor='#f0f9ff'" onmouseout="this.style.backgroundColor='transparent'">
                                 <td data-label="Program" style="padding: 10px;"><strong>${y["Gün ve Seans"]}</strong></td>
