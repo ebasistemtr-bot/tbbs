@@ -203,15 +203,17 @@
                             return (a.Sporcu_Adi || "").localeCompare(b.Sporcu_Adi || "", 'tr');
                         });
 
-                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th style="text-align:center;">Start (Seri/Kulvar)</th><th style="text-align:center;">Sonuç (Derece)</th><th style="text-align:center;">İşlem</th></tr></thead><tbody>`;
+                        let tabloHTML = `<table><thead><tr><th>Sporcu Adı</th><th>Eski Derece</th><th style="text-align:center;">Sonuç (Derece)</th><th style="text-align:center;">İşlem</th></tr></thead><tbody>`;
                         katilimcilar.forEach((k, index) => {
                             let rozet = k.Cinsiyet === "Kadın" ? `<span class="kiz-rozet">Kız</span>` : `<span class="erkek-rozet">Erkek</span>`;
                             let inpId = `snc_${gun}_${index}_${yarisPlani.brans.replace(/\s+/g, '')}`;
-                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<span style="color:var(--mavi); font-weight:bold;">${k.Seri}</span><br><span style="font-size:11px; color:var(--metin-alt);">${k.Kulvar}</span>` : `<span style="color:#cbd5e1;">-</span>`;
+                            let startBilgi = (k.Seri && k.Seri !== "-") ? `<div style="font-size: 12px; color: var(--mavi); margin-top: 4px; font-weight: 600;">${k.Seri} / ${k.Kulvar}</div>` : '';
                             tabloHTML += `<tr>
-                            <td data-label="Sporcu Adı"><a href="sporcu_yonetim.html?id=${k.Sporcu_ID}&kaynak=gyaris" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}</td>
+                            <td data-label="Sporcu Adı">
+                                <a href="sporcu_yonetim.html?id=${k.Sporcu_ID}&kaynak=gyaris" class="isim-link"><strong>${k.Sporcu_Adi}</strong></a> ${rozet}
+                                ${startBilgi}
+                            </td>
                                 <td data-label="Eski Derece" style="color:var(--metin-alt);">${k.Eski_Derece || "-"}</td>
-                                <td data-label="Start Bilgisi" style="text-align:center; line-height:1.2;">${startBilgi}</td>
                                 <td data-label="Sonuç" style="text-align:center;">
                                     <input type="text" id="${inpId}" class="sonuc-input" value="${k.Hedef || ''}" placeholder="00:00.00">
                                 </td>
