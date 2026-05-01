@@ -53,105 +53,8 @@
             max-width: 800px;
         }
 
-        .alt-metin {
-            color: var(--metin-alt);
-            font-size: 16px;
-            max-width: 650px;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            font-weight: 500;
-            background-color: var(--kart-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px dashed var(--mavi);
-        }
-
-        .vurgu {
-            color: var(--mavi);
-            font-weight: bold;
-        }
-
-        .gulen-yuz {
-            color: var(--bordo);
-            font-weight: bold;
-        }
-
-        /* HAVUZ VE YÜZÜCÜ ANİMASYONU */
-        .havuz-kapsayici {
-            width: 100%;
-            max-width: 700px;
-            background: linear-gradient(180deg, #38bdf8, #0284c7);
-            height: 70px;
-            border-radius: 35px;
-            position: relative;
-            border: 5px solid white;
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .kulvar-cizgisi {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-50%);
-            border-top: 2px dashed rgba(255, 255, 255, 0.5);
-        }
-
-        .yuzucu {
-            font-size: 40px;
-            position: absolute;
-            top: 5px;
-            left: 2%;
-            /* Başlangıç noktası */
-            z-index: 10;
-            /* Yüzücü turlar atıyor */
-            animation: turlama 6s infinite ease-in-out;
-            transition: all 1s ease;
-            /* Bitişe çekerken yumuşak geçiş için */
-        }
-
-        /* YÜZME TURLARI (GİT-GEL ANİMASYONU) - DÜZELTİLMİŞ YÖNLER */
-        @keyframes turlama {
-            0% {
-                left: 2%;
-                transform: scaleX(-1);
-            }
-
-            /* Başlangıç: Sağa doğru yüzüyor, sağa bakıyor */
-            45% {
-                left: 88%;
-                transform: scaleX(-1);
-            }
-
-            /* Sağ duvara ulaştı, hala sağa bakıyor */
-            50% {
-                left: 88%;
-                transform: scaleX(1);
-            }
-
-            /* Dönüş: Sola doğru yüzmek için sola döndü */
-            95% {
-                left: 2%;
-                transform: scaleX(1);
-            }
-
-            /* Geri dönüyor: Sola doğru yüzüyor, sola bakıyor */
-            100% {
-                left: 2%;
-                transform: scaleX(-1);
-            }
-
-            /* Tekrar sağa dönmek için sağa döndü */
-        }
-
-        /* GİRİŞ BUTONU (Başlangıçta Gizli) */
+        /* GİRİŞ BUTONU */
         .btn-giris {
-            display: none;
-            /* Sunucu uyanana kadar gizli */
             background-color: var(--bordo);
             color: white;
             text-decoration: none;
@@ -180,28 +83,6 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-
-        /* YÜKLENİYOR BİLGİSİ */
-        #durumMetni {
-            font-size: 14px;
-            color: var(--mavi);
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.6;
             }
         }
 
@@ -241,21 +122,8 @@
                 margin-bottom: 15px;
             }
             h1 {
-                font-size: 22px;
+            font-size: 24px;
                 margin-bottom: 10px;
-            }
-            .alt-metin {
-                font-size: 13px;
-                padding: 15px;
-                margin-bottom: 25px;
-            }
-            .havuz-kapsayici {
-                height: 50px;
-                margin-bottom: 20px;
-            }
-            .yuzucu {
-                font-size: 30px;
-                top: 4px;
             }
         }
     </style>
@@ -271,20 +139,9 @@
 
     <h1>Trabzon Büyükşehir Belediye Spor Kulübü</h1>
 
-    <div class="alt-metin">
-        Deneme sürümü olması sebebi ile veriler biraz gecikebilir. Sistem tam kapasite çalıştığında hızlı olacaktır. <span
-        </span><br>
-        Motorlar ısınana kadar, antrenmanını takip edelim...
-    </div>
+    <p style="color: var(--metin-alt); font-size: 16px; margin-bottom: 30px; max-width: 600px; line-height: 1.5;">Hızlı Erişim ve Sıfır Bekleme Süresi ile Kulüp İşletim Sistemi.</p>
 
-    <div class="havuz-kapsayici">
-        <div class="kulvar-cizgisi"></div>
-        <div class="yuzucu" id="Sporcu">🏊‍♀️</div>
-    </div>
-
-    <div id="durumMetni">Motorlar ısıtılıyor, sistem uyandırılıyor... Lütfen bekleyin.</div>
-
-    <a href="menu.html" class="btn-giris" id="girisButonu">🚀 Sistem Hazır - Giriş Yap</a>
+    <a href="menu.html" class="btn-giris" id="girisButonu" style="display: inline-block;">🚀 Sisteme Giriş Yap</a>
 
     <div id="kurButonuKutusu" onclick="uygulamayiKur()">
         📲 Uygulamayı Telefona Kur
@@ -296,65 +153,6 @@
     </div>
 
     <script>
-        // Render'daki API Adresimiz (Buraya kendi API'nin en hızlı yanıt veren /sporcular veya kök dizinini yaz)
-        const API_URL = "https://trabzon-yuzme-api.onrender.com/api/sporcular";
-
-        const yuzucu = document.getElementById("Sporcu");
-        const buton = document.getElementById("girisButonu");
-        const durumMetni = document.getElementById("durumMetni");
-        let radarDurdur = false;
-
-        // Render sunucusuna uyanıp uyanmadığını soran fonksiyon
-        async function sunucuyaPingAt() {
-            if (radarDurdur) return;
-
-            try {
-                // Sunucuya sesleniyoruz
-                const response = await fetch(API_URL);
-
-                // Eğer sunucu uyanmış ve 200 OK yanıtı vermişse
-                if (response.ok) {
-                    sistemUyandi();
-                } else {
-                    // Yanıt var ama tam hazır değilse 3 saniye sonra tekrar sor
-                    setTimeout(sunucuyaPingAt, 3000);
-                }
-            } catch (error) {
-                // Hata veriyorsa (Fetch error) sunucu hala uyuyordur, 3 saniye sonra tekrar dürt
-                setTimeout(sunucuyaPingAt, 3000);
-            }
-        }
-
-        // Sunucu uyandığında çalışacak görsel şölen
-        function sistemUyandi() {
-            radarDurdur = true; // Radarı kapat
-
-            // 1. Animasyonu durdur ve yüzücüyü bitiş çizgisine (sağa) sabitle
-            yuzucu.style.animation = "none";
-            yuzucu.style.left = "88%";
-            yuzucu.style.transform = "scaleX(1)"; // Yüzü sağa dönük kalsın
-
-            // 2. Metni güncelle
-            durumMetni.style.animation = "none";
-            durumMetni.style.color = "var(--bordo)";
-            durumMetni.innerHTML = "✅ Antrenmanı tamamladı! Motorlar devrede.";
-
-            // 3. Giriş butonunu patlat!
-            buton.style.display = "inline-block";
-        }
-
-        // Sayfa açılır açılmaz radarı çalıştır
-        sunucuyaPingAt();
-
-        // GÜVENLİK SÜBABI (Fallback): Eğer API'de bir sorun olursa sonsuza kadar beklemesin.
-        // 40 saniye sonra ne olursa olsun butonu göster.
-        setTimeout(() => {
-            if (!radarDurdur) {
-                sistemUyandi();
-                durumMetni.innerHTML = "⏳ Bağlantı biraz uzun sürdü ama giriş yapmayı deneyebilirsiniz.";
-            }
-        }, 40000);
-
         let deferredPrompt;
         const kurButonu = document.getElementById('kurButonuKutusu');
 
