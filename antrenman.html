@@ -359,6 +359,7 @@
 
     <script>
         const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgQr5kZF6CwGuQl95C5gCkB8l6XnDh_9hZBcr1y9C6ZKy4Qcy5GKUtQjBcbbnupv2_g/exec";
 
         // --- SEKME KONTROLÜ ---
         function sekmeDegistir(sekmeAdi) {
@@ -615,7 +616,7 @@
 
         async function kayitliProgramlariYukle() {
             try {
-                const res = await fetch(`${API_BASE}/antrenman/moduller`);
+                const res = await fetch(`${GAS_URL}?action=get_antrenman_moduller`);
                 const data = await res.json();
                 if (data.moduller) {
                     const havuzProgramlar = data.moduller.filter(m => (m.Tip || m.tip) === 'Havuz');
@@ -637,7 +638,7 @@
             kayitliProgramlariYukle();
             document.getElementById('ataTarih').valueAsDate = new Date();
             try {
-                const res = await fetch(`${API_BASE}/sporcular`); const data = await res.json();
+                const res = await fetch(`${GAS_URL}?action=get_sporcular`); const data = await res.json();
                 if (data.sporcular) {
                     tumSporcularAtama = data.sporcular;
                     let takimlar = new Set();

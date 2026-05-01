@@ -477,6 +477,7 @@
 
     <script>
          const API_BASE = "https://trabzon-yuzme-api.onrender.com/api"; // Canlı Sunucu (Render)
+         const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgQr5kZF6CwGuQl95C5gCkB8l6XnDh_9hZBcr1y9C6ZKy4Qcy5GKUtQjBcbbnupv2_g/exec"; // Hızlı Okuma Motoru
         //const API_BASE = "http://127.0.0.1:8000/api"; // Yerel Bilgisayar (Localhost)//
         let tumSporcular = {}; 
         let aktifSporcuID = null; 
@@ -519,7 +520,7 @@
             document.getElementById("listeAlani").innerHTML = "<div style='text-align: center; padding: 20px; color: var(--metin-alt); font-weight: bold;'>⏳ Yükleniyor...</div>";
             
             try {
-                const res = await fetch(`${API_BASE}/sporcular`); 
+                const res = await fetch(`${GAS_URL}?action=get_sporcular`); 
                 const data = await res.json();
                 
                 if (data.hata) {
@@ -620,7 +621,7 @@
             profilSekmeDegistir('yaris'); // API verileri inmeden önce varsayılan sekmeyi hazırla
 
             try {
-                const res = await fetch(`${API_BASE}/sporcu/detay/${id}`); const data = await res.json();
+                const res = await fetch(`${GAS_URL}?action=get_sporcu_detay&id=${id}`); const data = await res.json();
                 
                 // Yarışları işle
                 if (data.yarislar && data.yarislar.length > 0) {
@@ -701,7 +702,7 @@
                 const gAlan = document.getElementById("gyarisListeAlani");
                 gAlan.innerHTML = "<p style='color:var(--metin-alt); padding:10px;'>Yükleniyor...</p>";
                 try {
-                    const gRes = await fetch(`${API_BASE}/sporcu/gelecek_yarislar/${id}`);
+                    const gRes = await fetch(`${GAS_URL}?action=get_gelecek_yaris_id&id=${id}`);
                     const gData = await gRes.json();
                     if (!gData.yarislar || gData.yarislar.length === 0) {
                         gAlan.innerHTML = "<p style='color:var(--metin-alt); padding:10px;'>Bu sporcunun yakın zamanda planlanmış bir yarışı bulunmuyor.</p>";

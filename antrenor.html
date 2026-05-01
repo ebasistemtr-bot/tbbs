@@ -183,13 +183,14 @@
 
     <script>
         const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgQr5kZF6CwGuQl95C5gCkB8l6XnDh_9hZBcr1y9C6ZKy4Qcy5GKUtQjBcbbnupv2_g/exec";
         // --- ANTRENÖR MODÜLÜ JS ---
         let antrenorler = [];
         let aktifSeciliAntrenorId = null;
 
         async function antrenorleriYukle() {
             try {
-                const res = await fetch(`${API_BASE}/antrenorler`);
+                const res = await fetch(`${GAS_URL}?action=get_antrenorler`);
                 const data = await res.json();
                 antrenorler = data.antrenorler || [];
                 antrenorGridGuncelle();

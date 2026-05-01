@@ -139,6 +139,7 @@
 
     <script>
         const API_BASE = "https://trabzon-yuzme-api.onrender.com/api";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgQr5kZF6CwGuQl95C5gCkB8l6XnDh_9hZBcr1y9C6ZKy4Qcy5GKUtQjBcbbnupv2_g/exec";
         let tumSporcular = {}; 
         let aktifGrupAdi = "";
         let yoklamaDurumu = {}; 
@@ -146,7 +147,7 @@
         window.onload = async function() {
             document.getElementById('yoklamaTarih').valueAsDate = new Date();
             try {
-                const response = await fetch(`${API_BASE}/sporcular`);
+                const response = await fetch(`${GAS_URL}?action=get_sporcular`);
                 const data = await response.json();
                 
                 if (data.hata) {

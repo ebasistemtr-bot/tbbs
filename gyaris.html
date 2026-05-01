@@ -96,6 +96,7 @@
 
     <script>
         const API_BASE = "https://trabzon-yuzme-api.onrender.com/api"; // Canlı Sunucu (Render)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgQr5kZF6CwGuQl95C5gCkB8l6XnDh_9hZBcr1y9C6ZKy4Qcy5GKUtQjBcbbnupv2_g/exec";
         // const API_BASE = "http://127.0.0.1:8000/api"; // Yerel test için
         
         let tumYarislar = [];
@@ -129,7 +130,7 @@
         window.onload = async function() {
             try {
                 // 1. Cinsiyet eşleştirmesi için sporcuları çek
-                const resSporcular = await fetch(`${API_BASE}/sporcular`);
+                const resSporcular = await fetch(`${GAS_URL}?action=get_sporcular`);
                 const dataSporcular = await resSporcular.json();
                 if(dataSporcular.sporcular) {
                     Object.entries(dataSporcular.sporcular).forEach(([id, s]) => {
@@ -148,7 +149,7 @@
                 }
 
                 // 2. Tüm yarışları çek
-                const resYaris = await fetch(`${API_BASE}/gelecek_yarislar/tum`);
+                const resYaris = await fetch(`${GAS_URL}?action=get_gelecek_yarislar_tum`);
                 const dataYaris = await resYaris.json();
                 if(dataYaris.yarislar) {
                     tumYarislar = dataYaris.yarislar.map(y => {
