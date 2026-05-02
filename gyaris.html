@@ -114,9 +114,39 @@
                 <button class="btn-yonetici" onclick="yoneticiModalKapat(); sonucCekTetikle();">
                     <i>🏆</i> Sonuçları Çek
                 </button>
-                <button class="btn-yonetici" style="grid-column: 1 / -1; background: #fff1f2; border-color: #fda4af; color: var(--bordo);" onclick="alert('Yapım aşamasında...')">
+                <button class="btn-yonetici" style="grid-column: 1 / -1; background: #fff1f2; border-color: #fda4af; color: var(--bordo);" onclick="yoneticiModalKapat(); karsilastirmaModalAc();">
                     <i>⚖️</i> Sonuç Karşılaştır & Kaydet
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KARŞILAŞTIRMA MODALI -->
+    <div id="karsilastirmaModal" class="modal-arkaplan">
+        <div class="modal-icerik" style="width: 850px; max-width: 95%;">
+            <button class="modal-kapat" onclick="karsilastirmaModalKapat()">✖</button>
+            <h2 style="margin-top: 0; color: var(--bordo); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">⚖️ Sonuç Karşılaştır & Onayla</h2>
+            <p style="font-size: 13px; color: var(--metin-alt); margin-top: 5px;">Kırmızı satırlar uyuşmayan verilerdir, giriş kutularını kendi teyidinize göre doldurun.</p>
+            
+            <div style="overflow-x: auto; max-height: 450px; margin-top: 15px;">
+                <table id="karsilastirmaTablosu" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Sporcu Adı</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Branş</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Antrenör (F)</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Sistem (I)</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Kesin Kayıt (Onay)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="karsilastirmaBody">
+                        <tr><td colspan="5" style="text-align: center;">Yükleniyor... ⏳</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                <button class="btn-kaydet" style="padding: 12px 25px; font-size: 14px;" onclick="kesinKaydetTetikle()">💾 Arşive Kaydet</button>
             </div>
         </div>
     </div>
@@ -321,6 +351,104 @@
     document.getElementById('yoneticiModal').addEventListener('click', function(e) {
         if(e.target === this) yoneticiModalKapat();
     });
+
+    // --- YENİ EKLENEN KARŞILAŞTIRMA VE KAYDETME MOTORU ---
+    let karsilastirmaVerileri = [];
+
+    async function karsilastirmaModalAc() {
+        document.getElementById('karsilastirmaModal').style.display = 'flex';
+        document.getElementById('karsilastirmaBody').innerHTML = '<tr><td colspan="5" style="text-align: center;">Veriler Çekiliyor... ⏳</td></tr>';
+
+        try {
+            const res = await fetch(`${API_BASE}/gelecek_yaris/liste`);
+            const data = await res.json();
+            
+            if(data.veriler && data.veriler.length > 1) {
+                const satirlar = data.veriler.slice(1);
+                karsilastirmaVerileri = [];
+                let html = '';
+                
+                satirlar.forEach((satir, index) => {
+                    if(satir.length < 3) return;
+                    let spId = satir[0]; let spAd = satir[1]; let brans = satir[2];
+                    let antrenorVeri = (satir[5] && satir[5] !== "-") ? satir[5].trim() : "";
+                    let sistemVeri = (satir[8] && satir[8] !== "-") ? satir[8].trim() : "";
+                    
+                    let yarisAdi = satir[9] || "Bilinmiyor";
+                    let tarih = satir[10] || "-";
+                    let sira = satir[11] || "-";
+                    let puan = satir[12] || "-";
+                    
+                    let sonKayit = ""; let satirRengi = "";
+                    
+                    // Eğer ikisi eşleşiyorsa ve boş değillerse onay kutusuna veriyi direkt yaz
+                    if(antrenorVeri === sistemVeri && antrenorVeri !== "") {
+                        sonKayit = antrenorVeri;
+                    } else if (antrenorVeri !== sistemVeri) {
+                        satirRengi = "background-color: #fee2e2;"; // Kırmızı Uyarı
+                    }
+
+                    html += `<tr style="${satirRengi}">
+                        <td>${spAd}</td>
+                        <td>${brans}</td>
+                        <td style="font-weight: bold; color: var(--metin-alt);">${antrenorVeri || "-"}</td>
+                        <td style="font-weight: bold; color: var(--mavi);">${sistemVeri || "-"}</td>
+                        <td>
+                            <input type="text" class="sonuc-input final-sonuc-input" style="width: 100%; box-sizing:border-box;" data-idx="${index}" value="${sonKayit}" placeholder="Kesin Dereceyi Girin">
+                        </td>
+                    </tr>`;
+
+                    karsilastirmaVerileri.push({
+                        sporcu_id: spId, tarih: tarih, yaris_adi: yarisAdi, brans: brans, sira: sira, puan: puan
+                    });
+                });
+                document.getElementById('karsilastirmaBody').innerHTML = html || '<tr><td colspan="5" style="text-align:center;">Karşılaştırılacak veri yok.</td></tr>';
+            } else {
+                document.getElementById('karsilastirmaBody').innerHTML = '<tr><td colspan="5" style="text-align: center;">Liste boş. Önce yarış listesi yüklemelisiniz.</td></tr>';
+            }
+        } catch(e) {
+            document.getElementById('karsilastirmaBody').innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Bağlantı hatası! API çalışıyor mu?</td></tr>';
+        }
+    }
+
+    function karsilastirmaModalKapat() { document.getElementById('karsilastirmaModal').style.display = 'none'; }
+
+    async function kesinKaydetTetikle() {
+        let inputs = document.querySelectorAll('.final-sonuc-input');
+        let bosVar = false;
+        let sonuclar_listesi = [];
+
+        inputs.forEach(inp => {
+            let val = inp.value.trim();
+            if(val === "") bosVar = true;
+            else {
+                let idx = inp.getAttribute('data-idx');
+                let k_veri = karsilastirmaVerileri[idx];
+                sonuclar_listesi.push({
+                    sporcu_id: k_veri.sporcu_id, tarih: k_veri.tarih, yaris_adi: k_veri.yaris_adi,
+                    brans: k_veri.brans, sira: k_veri.sira, derece: val, puan: k_veri.puan
+                });
+            }
+        });
+
+        if(bosVar) {
+            if(!confirm("⚠️ DİKKAT: Onaylanmamış (boş bırakılmış) dereceler var! Yine de sadece dolu olanları sporcuların arşivine kaydetmek istediğinize emin misiniz?")) return;
+        }
+        if(sonuclar_listesi.length === 0) { alert("Kaydedilecek geçerli bir sonuç bulunamadı."); return; }
+
+        document.getElementById('yuklemeBaslik').innerText = "Sonuçlar Arşive İşleniyor 💾";
+        document.getElementById('yuklemeAciklama').innerText = "Tüm sporcuların bireysel arşiv sayfalarına dereceleri, puanları ve sıraları yazılıyor. Bu işlem birkaç dakika sürebilir, lütfen sekmeyi kapatmayın...";
+        document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
+        karsilastirmaModalKapat();
+
+        try {
+            const res = await fetch(`${API_BASE}/gelecek_yaris/kesin_sonuclari_kaydet`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ sonuclar: sonuclar_listesi }) });
+            const data = await res.json();
+            if(res.ok && !data.hata) { alert("✅ " + data.mesaj); } else { alert("❌ Hata: " + (data.hata || "Bilinmeyen hata")); }
+        } catch(e) {
+            alert("⚠️ Sunucu bağlantı hatası!");
+        } finally { document.getElementById('pdfYuklemeEkrani').style.display = 'none'; }
+    }
 
     // YENİ EKLENEN SONUÇ ÇEKME FONKSİYONU
     async function sonucCekTetikle() {
