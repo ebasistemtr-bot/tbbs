@@ -420,7 +420,10 @@ Kurallar:
             const data = await res.json();
             
             if(res.ok && !data.hata) { alert("✅ " + data.mesaj); window.location.reload(); 
-            } else { alert("❌ Hata: " + (data.hata || "Bilinmeyen hata.")); }
+            } else { 
+                let detayliHata = data.hata || (data.detail ? "Sistem Hatası: " + JSON.stringify(data.detail) : "Bilinmeyen hata.");
+                alert("❌ Hata: " + detayliHata); 
+            }
         } catch(e) { alert("⚠️ Sunucu bağlantı hatası!");
         } finally { document.getElementById('pdfYuklemeEkrani').style.display = 'none'; }
     }
