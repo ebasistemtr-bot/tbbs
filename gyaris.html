@@ -101,7 +101,7 @@
             <h2 style="margin-top: 0; color: var(--bordo); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">⚙️ Yönetici İşlemleri</h2>
             
             <div class="yonetici-grid">
-                <button class="btn-yonetici" onclick="alert('Yapım aşamasında...')">
+                <button class="btn-yonetici" onclick="yoneticiModalKapat(); programModalAc();">
                     <i>📅</i> Yarış Günleri Yükle
                 </button>
                 <button class="btn-yonetici" onclick="document.getElementById('pdfInput').click(); yoneticiModalKapat();">
@@ -133,8 +133,8 @@
                         <tr>
                             <th style="background: var(--kart-bg); position: sticky; top: 0;">Sporcu Adı</th>
                             <th style="background: var(--kart-bg); position: sticky; top: 0;">Branş</th>
-                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Antrenör (F)</th>
-                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Sistem (I)</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Manuel (Antrenör)</th>
+                            <th style="background: var(--kart-bg); position: sticky; top: 0;">Sistem (Web)</th>
                             <th style="background: var(--kart-bg); position: sticky; top: 0;">Kesin Kayıt (Onay)</th>
                         </tr>
                     </thead>
@@ -146,6 +146,35 @@
             
             <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
                 <button class="btn-kaydet" style="padding: 12px 25px; font-size: 14px;" onclick="kesinKaydetTetikle()">💾 Arşive Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YARIŞ PROGRAMI YÜKLE MODALI (YAPAY ZEKA) -->
+    <div id="programModal" class="modal-arkaplan">
+        <div class="modal-icerik" style="width: 550px;">
+            <button class="modal-kapat" onclick="programModalKapat()">✖</button>
+            <h2 style="margin-top: 0; color: var(--mavi); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">📅 Yarış Programı Yükle (Yapay Zeka)</h2>
+            
+            <p style="font-size: 13px; color: var(--metin-alt);">1. Aşağıdaki metni kopyalayın ve yarış programının fotoğrafıyla birlikte yapay zekaya gönderin.</p>
+            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--kenarlik); margin-bottom: 15px; position: relative;">
+                <code id="promptMetni" style="font-size: 12px; color: var(--mavi); display: block; white-space: pre-wrap;">Ekteki yüzme yarış programı resmini incele. Lütfen bu programı sisteme entegre edebilmem için aşağıdaki JSON formatında çıktı ver. Sadece ve sadece geçerli bir JSON dizisi yaz (```json...``` blokları olmadan saf dizi gelsin). Başka hiçbir açıklama yapma.
+
+Kurallar:
+- 'brans': Yarışın adı (Örn: '100M SERBEST'). Hepsi BÜYÜK harf olmalı ve Türkçe karakterlere (Ş,Ğ,Ü,Ö,Ç,İ) dikkat etmelisin.
+- 'gun': Yarışın kaçıncı gün olduğu (Sayı olarak, Örn: 1).
+- 'seans': Hangi gün ve seans olduğu (Örn: '1. Gün Sabah' veya '2. Gün Akşam').
+
+Örnek Çıktı:
+[ {"brans": "400M KARIŞIK", "gun": 1, "seans": "1. Gün Sabah"} ]</code>
+                <button onclick="promptKopyala()" style="position: absolute; top: 10px; right: 10px; background: var(--mavi); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 4px 8px; font-size: 11px;">Kopyala</button>
+            </div>
+            
+            <p style="font-size: 13px; color: var(--metin-alt);">2. Yapay zekadan aldığınız o JSON kodunu aşağıdaki kutuya yapıştırın.</p>
+            <textarea id="jsonGirdisi" style="width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--kenarlik); padding: 10px; font-family: monospace; font-size: 13px; resize: none; box-sizing: border-box;" placeholder='[\n  {"brans": "100M SERBEST", "gun": 1, "seans": "1. Gün Sabah"}\n]'></textarea>
+            
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+                <button class="btn-kaydet" style="padding: 10px 20px; font-size: 14px;" onclick="programKaydetTetikle()">💾 Sistemi Güncelle</button>
             </div>
         </div>
     </div>
@@ -167,29 +196,7 @@
         let cinsiyetHaritasi = {};
         let dogumYiliHaritasi = {};
         
-        // YARIŞ SIRASI (Referans Alınan Harita)
-        const YARIS_PROGRAMI = [
-            { brans: "400M KARIŞIK", gun: 1, seans: "1. Gün Sabah" },
-            { brans: "100M SERBEST", gun: 1, seans: "1. Gün Sabah" },
-            { brans: "50M KELEBEK", gun: 1, seans: "1. Gün Sabah" },
-            { brans: "200M KURBAĞALAMA", gun: 1, seans: "1. Gün Sabah" },
-            { brans: "400M SERBEST", gun: 1, seans: "1. Gün Sabah" },
-            
-            { brans: "200M KELEBEK", gun: 1, seans: "1. Gün Akşam" },
-            { brans: "50M KURBAĞALAMA", gun: 1, seans: "1. Gün Akşam" },
-            { brans: "100M SIRTÜSTÜ", gun: 1, seans: "1. Gün Akşam" },
-            { brans: "800M SERBEST", gun: 1, seans: "1. Gün Akşam" },
-            
-            { brans: "200M KARIŞIK", gun: 2, seans: "2. Gün Sabah" },
-            { brans: "50M SIRTÜSTÜ", gun: 2, seans: "2. Gün Sabah" },
-            { brans: "200M SERBEST", gun: 2, seans: "2. Gün Sabah" },
-            { brans: "100M KURBAĞALAMA", gun: 2, seans: "2. Gün Sabah" },
-            
-            { brans: "100M KELEBEK", gun: 2, seans: "2. Gün Akşam" },
-            { brans: "50M SERBEST", gun: 2, seans: "2. Gün Akşam" },
-            { brans: "200M SIRTÜSTÜ", gun: 2, seans: "2. Gün Akşam" },
-            { brans: "1500M SERBEST", gun: 2, seans: "2. Gün Akşam" }
-        ];
+        let YARIS_PROGRAMI = []; // Dinamik olarak API'den doldurulacak
 
         window.onload = async function() {
             try {
@@ -232,13 +239,22 @@
                     });
                 }
                 
+                // 3. Yarış programı (JSON) haritasını API'den çek
+                const resProg = await fetch(`${API_BASE}/gelecek_yaris/program_getir`);
+                const dataProg = await resProg.json();
+                if(dataProg.program && dataProg.program.length > 0) {
+                    YARIS_PROGRAMI = dataProg.program;
+                } else {
+                    YARIS_PROGRAMI = [];
+                }
+                
                 // YARIŞ GÜNLERİ SEKMELERİNİ DİNAMİK OLUŞTUR (Sınırsız Gün Desteği)
                 const sekmeMenusu = document.getElementById('sekmeMenusu');
                 sekmeMenusu.innerHTML = '';
                 const gunler = [...new Set(YARIS_PROGRAMI.map(p => p.gun))].sort((a,b) => a - b);
                 
                 if (gunler.length === 0) {
-                    sekmeMenusu.innerHTML = '<button class="sekme-btn aktif">PROGRAM YOK</button>';
+                    sekmeMenusu.innerHTML = '<button class="sekme-btn aktif" style="color:var(--bordo);">YARIŞ HARİTASI (PROGRAM) YÜKLENMEDİ</button>';
                 } else {
                     gunler.forEach((g, index) => {
                         let btn = document.createElement('button');
@@ -371,6 +387,44 @@
         if(e.target === this) yoneticiModalKapat();
     });
 
+    // --- YENİ EKLENEN YARIŞ PROGRAMI (JSON) MOTORU ---
+    function programModalAc() { document.getElementById('programModal').style.display = 'flex'; }
+    function programModalKapat() { document.getElementById('programModal').style.display = 'none'; }
+    
+    function promptKopyala() {
+        const metin = document.getElementById('promptMetni').innerText;
+        navigator.clipboard.writeText(metin).then(() => {
+            alert("Metin kopyalandı! Şimdi ChatGPT, Gemini vb. yapay zeka aracına yapıştırıp resmi gönderebilirsiniz.");
+        });
+    }
+
+    async function programKaydetTetikle() {
+        const val = document.getElementById('jsonGirdisi').value.trim();
+        if(!val) return alert("Lütfen yapay zekadan aldığınız JSON kodunu kutuya yapıştırın.");
+        
+        let jsonData;
+        try {
+            // Sadece JSON dizisini ayıklamak için (Yapay zeka bazen ```json ekliyor)
+            let temiz = val.replace(/```json/g, '').replace(/```/g, '').trim();
+            jsonData = JSON.parse(temiz);
+        } catch(e) { return alert("Geçersiz JSON formatı! Lütfen kodu kontrol edin.\nHata: " + e.message); }
+        
+        if(!Array.isArray(jsonData)) return alert("JSON formatı bir dizi (array) olmalıdır!");
+
+        document.getElementById('yuklemeBaslik').innerText = "Program Kaydediliyor 📅";
+        document.getElementById('yuklemeAciklama').innerText = "Yeni yarış programı Google Sheets veritabanına işleniyor. Lütfen bekleyin...";
+        programModalKapat(); document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
+
+        try {
+            const res = await fetch(`${API_BASE}/gelecek_yaris/program_kaydet`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ program: jsonData }) });
+            const data = await res.json();
+            
+            if(res.ok && !data.hata) { alert("✅ " + data.mesaj); window.location.reload(); 
+            } else { alert("❌ Hata: " + (data.hata || "Bilinmeyen hata.")); }
+        } catch(e) { alert("⚠️ Sunucu bağlantı hatası!");
+        } finally { document.getElementById('pdfYuklemeEkrani').style.display = 'none'; }
+    }
+
     // --- YENİ EKLENEN KARŞILAŞTIRMA VE KAYDETME MOTORU ---
     let karsilastirmaVerileri = [];
 
@@ -410,8 +464,18 @@
                     html += `<tr style="${satirRengi}">
                         <td>${spAd}</td>
                         <td>${brans}</td>
-                        <td style="font-weight: bold; color: var(--metin-alt);">${antrenorVeri || "-"}</td>
-                        <td style="font-weight: bold; color: var(--mavi);">${sistemVeri || "-"}</td>
+                        <td style="cursor: pointer; background-color: rgba(255,255,255,0.3);" title="Tıklayarak onaya kopyala" onclick="kopyalaGec(${index}, '${antrenorVeri}')" onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='rgba(255,255,255,0.3)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 11px; color: var(--metin-alt); font-weight: normal;">Manuel Sonuç:</span>
+                                <span style="font-weight: bold; color: var(--metin-ana);">${antrenorVeri || "-"}</span>
+                            </div>
+                        </td>
+                        <td style="cursor: pointer; background-color: rgba(255,255,255,0.3);" title="Tıklayarak onaya kopyala" onclick="kopyalaGec(${index}, '${sistemVeri}')" onmouseover="this.style.backgroundColor='#e0f2fe'" onmouseout="this.style.backgroundColor='rgba(255,255,255,0.3)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 11px; color: var(--mavi); font-weight: normal;">Sistem Sonucu:</span>
+                                <span style="font-weight: bold; color: var(--mavi);">${sistemVeri || "-"}</span>
+                            </div>
+                        </td>
                         <td>
                             <input type="text" class="sonuc-input final-sonuc-input" style="width: 100%; box-sizing:border-box;" data-idx="${index}" value="${sonKayit}" placeholder="Kesin Dereceyi Girin">
                         </td>
@@ -431,6 +495,18 @@
     }
 
     function karsilastirmaModalKapat() { document.getElementById('karsilastirmaModal').style.display = 'none'; }
+    
+    // --- KOPYALAMA YARDIMCISI ---
+    function kopyalaGec(idx, veri) {
+        if(!veri || veri === "-") return;
+        const inp = document.querySelector(`.final-sonuc-input[data-idx='${idx}']`);
+        if(inp) {
+            inp.value = veri;
+            inp.style.backgroundColor = '#ecfdf5'; // Kısa süreli yeşil parlama efekti
+            inp.style.borderColor = 'var(--basari)';
+            setTimeout(() => { inp.style.backgroundColor = '#fff'; inp.style.borderColor = '#cbd5e1'; }, 400);
+        }
+    }
 
     async function kesinKaydetTetikle() {
         let inputs = document.querySelectorAll('.final-sonuc-input');
