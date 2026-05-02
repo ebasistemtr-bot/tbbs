@@ -148,7 +148,7 @@
     </div>
 
     <div style="margin-top: 30px; font-size: 13px; color: var(--metin-alt); font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 5px;">
-        <span>Sistem Sürümü: v13.0</span>
+        <span>Sistem Sürümü: v14.0</span>
         <span style="font-size: 10px; font-weight: normal; opacity: 0.8;">Canlı ve güncel verilerle çalışıyor</span>
     </div>
 
@@ -172,10 +172,10 @@
             // Bizim o şık bordo butonumuzu göster
             kurButonu.style.display = 'block';
 
-            // TAM İSTEDİĞİN GİBİ: 10 Saniye sonra kullanıcıyı darlamamak için gizle
+        // Kullanıcının butonu kaçırmaması için süreyi 30 saniyeye çıkardık
             setTimeout(() => {
                 kurButonu.style.display = 'none';
-            }, 10000);
+        }, 30000);
         });
 
         async function uygulamayiKur() {

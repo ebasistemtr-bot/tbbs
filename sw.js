@@ -1,4 +1,4 @@
-const CACHE_NAME = "TBBSY-v13";
+const CACHE_NAME = "TBBSY-v14";
 
 self.addEventListener("install", (e) => {
     console.log("[Service Worker] Motor Kuruluyor... Versiyon:", CACHE_NAME);
