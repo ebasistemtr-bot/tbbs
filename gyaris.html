@@ -85,9 +85,8 @@
             <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="pdfYukle(event)">
         </div>
         
-        <div class="sekme-menusu">
-            <button class="sekme-btn aktif" onclick="gunDegistir(1)">1. GÜN YARIŞLARI</button>
-            <button class="sekme-btn" onclick="gunDegistir(2)">2. GÜN YARIŞLARI</button>
+        <div class="sekme-menusu" id="sekmeMenusu">
+            <!-- Sekmeler JS ile yarış programına göre dinamik olarak oluşturulacak -->
         </div>
         
         <div class="icerik-alani" id="listeAlani">
@@ -233,7 +232,24 @@
                     });
                 }
                 
-                gunDegistir(1); // İlk açılışta 1. Günü çiz
+                // YARIŞ GÜNLERİ SEKMELERİNİ DİNAMİK OLUŞTUR (Sınırsız Gün Desteği)
+                const sekmeMenusu = document.getElementById('sekmeMenusu');
+                sekmeMenusu.innerHTML = '';
+                const gunler = [...new Set(YARIS_PROGRAMI.map(p => p.gun))].sort((a,b) => a - b);
+                
+                if (gunler.length === 0) {
+                    sekmeMenusu.innerHTML = '<button class="sekme-btn aktif">PROGRAM YOK</button>';
+                } else {
+                    gunler.forEach((g, index) => {
+                        let btn = document.createElement('button');
+                        btn.className = index === 0 ? 'sekme-btn aktif' : 'sekme-btn';
+                        btn.onclick = () => gunDegistir(g);
+                        btn.innerText = `${g}. GÜN YARIŞLARI`;
+                        btn.id = `btnGun${g}`;
+                        sekmeMenusu.appendChild(btn);
+                    });
+                    gunDegistir(gunler[0]); // İlk günü aç
+                }
             } catch(e) {
                 console.error("API Hatası:", e);
                 document.getElementById('listeAlani').innerHTML = "<div class='yukleniyor' style='color:red;'>Bağlantı Hatası! Sunucu kapalı olabilir.</div>";
@@ -241,7 +257,10 @@
         };
 
         function gunDegistir(gun) {
-            document.querySelectorAll('.sekme-btn').forEach((b, i) => b.className = (i+1 === gun) ? 'sekme-btn aktif' : 'sekme-btn');
+            document.querySelectorAll('.sekme-btn').forEach(b => b.className = 'sekme-btn');
+            let aktifBtn = document.getElementById(`btnGun${gun}`);
+            if(aktifBtn) aktifBtn.className = 'sekme-btn aktif';
+            
             const alan = document.getElementById("listeAlani");
             alan.innerHTML = "";
             
