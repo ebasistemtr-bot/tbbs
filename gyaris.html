@@ -48,6 +48,16 @@
         .btn-kaydet { background-color: var(--mavi); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s;}
         .btn-kaydet:hover { filter: brightness(1.1); }
 
+        /* YÖNETİCİ MODALI */
+        .modal-arkaplan { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px); }
+        .modal-icerik { background: var(--kart-bg); border-radius: 12px; width: 450px; max-width: 90%; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; }
+        .modal-kapat { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; color: var(--metin-alt); cursor: pointer; transition: 0.2s;}
+        .modal-kapat:hover { color: var(--bordo); }
+        .yonetici-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .btn-yonetici { background: #f8fafc; border: 1px solid var(--kenarlik); border-radius: 8px; padding: 15px 10px; font-weight: bold; color: var(--metin-ana); cursor: pointer; transition: 0.2s; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+        .btn-yonetici:hover { background: #f0f9ff; border-color: var(--mavi); color: var(--mavi); box-shadow: 0 4px 6px rgba(2,132,199,0.1);}
+        .btn-yonetici i { font-size: 24px; font-style: normal; }
+
         /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
         @media (max-width: 768px) {
             .baslik-alani { flex-direction: column; gap: 15px; text-align: center; }
@@ -67,13 +77,12 @@
 <body>
     <div class="kapsayici">
         <div class="baslik-alani">
-            <h1>⏱️ Antrenör Yarış Paneli</h1>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button onclick="startListesiCek()" class="btn-ana" style="background: #eff6ff; color: var(--lacivert); border: 1px solid #bfdbfe; cursor: pointer; padding: 10px 15px;">🚦 Start Listesi Çek</button>
-                <button onclick="document.getElementById('pdfInput').click()" class="btn-ana" style="background: white; color: var(--mavi); border: none; cursor: pointer; padding: 10px 15px;">📄 PDF Yükle</button>
-                <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="pdfYukle(event)">
-                <a href="menu.html" class="btn-ana">Ana Menü</a>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <a href="menu.html" class="btn-ana" style="text-decoration: none;">🏠 Menü</a>
+                <h1 style="margin: 0; font-size: 22px;">⏱️ Antrenör Yarış Paneli</h1>
             </div>
+            <button onclick="yoneticiModalAc()" class="btn-ana" style="background: #1e293b; color: white; border: none; cursor: pointer; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">⚙️ Yönetici İşlemleri</button>
+            <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="pdfYukle(event)">
         </div>
         
         <div class="sekme-menusu">
@@ -83,6 +92,32 @@
         
         <div class="icerik-alani" id="listeAlani">
             <div class="yukleniyor">Veriler ve Sporcu Eşleşmeleri Hazırlanıyor... ⏳</div>
+        </div>
+    </div>
+
+    <!-- YÖNETİCİ İŞLEMLERİ MODALI -->
+    <div id="yoneticiModal" class="modal-arkaplan">
+        <div class="modal-icerik">
+            <button class="modal-kapat" onclick="yoneticiModalKapat()">✖</button>
+            <h2 style="margin-top: 0; color: var(--bordo); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">⚙️ Yönetici İşlemleri</h2>
+            
+            <div class="yonetici-grid">
+                <button class="btn-yonetici" onclick="alert('Yapım aşamasında...')">
+                    <i>📅</i> Yarış Günleri Yükle
+                </button>
+                <button class="btn-yonetici" onclick="document.getElementById('pdfInput').click(); yoneticiModalKapat();">
+                    <i>📄</i> Sporcu PDF Yükle
+                </button>
+                <button class="btn-yonetici" onclick="yoneticiModalKapat(); startListesiCek();">
+                    <i>🚦</i> Start List Çek
+                </button>
+                <button class="btn-yonetici" onclick="yoneticiModalKapat(); sonucCekTetikle();">
+                    <i>🏆</i> Sonuçları Çek
+                </button>
+                <button class="btn-yonetici" style="grid-column: 1 / -1; background: #fff1f2; border-color: #fda4af; color: var(--bordo);" onclick="alert('Yapım aşamasında...')">
+                    <i>⚖️</i> Sonuç Karşılaştır & Kaydet
+                </button>
+            </div>
         </div>
     </div>
 
@@ -273,6 +308,49 @@
                 alert("Bağlantı Hatası"); btn.innerText = "💾 Kaydet"; btn.style.backgroundColor = "var(--mavi)";
             }
         }
+
+    function yoneticiModalAc() {
+        document.getElementById('yoneticiModal').style.display = 'flex';
+    }
+    
+    function yoneticiModalKapat() {
+        document.getElementById('yoneticiModal').style.display = 'none';
+    }
+    
+    // Modal dışına tıklandığında kapatma
+    document.getElementById('yoneticiModal').addEventListener('click', function(e) {
+        if(e.target === this) yoneticiModalKapat();
+    });
+
+    // YENİ EKLENEN SONUÇ ÇEKME FONKSİYONU
+    async function sonucCekTetikle() {
+        let cevap = prompt("Sonuçların çekileceği Yarış Numarasını (Örn: 31) veya tam adresini girin:");
+        if(!cevap || cevap.trim() === "") return;
+
+        document.getElementById('yuklemeBaslik').innerText = "Sonuç PDF'leri Okunuyor 🏆";
+        document.getElementById('yuklemeAciklama').innerText = "Web sitesindeki sonuçlar indiriliyor ve dereceler eşleştiriliyor. Lütfen bekleyin...";
+        document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
+
+        try {
+            const res = await fetch(`${API_BASE}/gelecek_yaris/sonuc_cek`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url_veya_no: cevap })
+            });
+            const data = await res.json();
+            
+            if(res.ok && !data.hata) {
+                alert("✅ " + data.mesaj);
+                window.location.reload(); 
+            } else { 
+                alert("❌ Hata: " + (data.hata || "Bilinmeyen hata.")); 
+            }
+        } catch(e) {
+            alert("⚠️ Sunucu bağlantı hatası!");
+        } finally {
+            document.getElementById('pdfYuklemeEkrani').style.display = 'none';
+        }
+    }
 
         // YENİ EKLENEN PDF YÜKLEME FONKSİYONU
         async function pdfYukle(event) {
