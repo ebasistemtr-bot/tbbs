@@ -113,6 +113,9 @@
                 <button class="btn-yonetici" onclick="yoneticiModalKapat(); sonucCekTetikle();">
                     <i>🏆</i> Sonuçları Çek
                 </button>
+                <button class="btn-yonetici" onclick="yoneticiModalKapat(); manuelYarisModalAc();">
+                    <i>➕</i> Manuel Yarış Ekle
+                </button>
                 <button class="btn-yonetici" style="grid-column: 1 / -1; background: #fff1f2; border-color: #fda4af; color: var(--bordo);" onclick="yoneticiModalKapat(); karsilastirmaModalAc();">
                     <i>⚖️</i> Sonuç Karşılaştır & Kaydet
                 </button>
@@ -175,6 +178,40 @@ Kurallar:
             
             <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
                 <button class="btn-kaydet" style="padding: 10px 20px; font-size: 14px;" onclick="programKaydetTetikle()">💾 Sistemi Güncelle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUEL YARIŞ EKLE MODALI -->
+    <div id="manuelYarisModal" class="modal-arkaplan">
+        <div class="modal-icerik" style="width: 450px;">
+            <button class="modal-kapat" onclick="manuelYarisModalKapat()">✖</button>
+            <h2 style="margin-top: 0; color: var(--bordo); border-bottom: 2px solid var(--kenarlik); padding-bottom: 10px;">➕ Manuel Yarış Ekle</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold; color: var(--metin-alt);">Sporcu Adı Soyadı:</label>
+                <input type="text" id="manAd" placeholder="Örn: Elif Nas Çavdar" style="width: 100%; padding: 8px; border: 1px solid var(--kenarlik); border-radius: 6px; margin-top: 5px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold; color: var(--metin-alt);">Doğum Yılı (Son 2 Hane):</label>
+                <input type="number" id="manYil" placeholder="Örn: 15" style="width: 100%; padding: 8px; border: 1px solid var(--kenarlik); border-radius: 6px; margin-top: 5px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold; color: var(--metin-alt);">Branş:</label>
+                <select id="manBrans" style="width: 100%; padding: 8px; border: 1px solid var(--kenarlik); border-radius: 6px; margin-top: 5px; box-sizing: border-box;">
+                    <!-- Dinamik dolacak -->
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold; color: var(--metin-alt);">Eski Derece (Varsa):</label>
+                <input type="text" id="manDerece" placeholder="Örn: 1:25.40 veya NT" style="width: 100%; padding: 8px; border: 1px solid var(--kenarlik); border-radius: 6px; margin-top: 5px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+                <button class="btn-kaydet" style="padding: 10px 20px; font-size: 14px;" onclick="manuelYarisKaydet()">💾 Yarışı Ekle</button>
             </div>
         </div>
     </div>
@@ -511,6 +548,34 @@ Kurallar:
         }
     }
 
+    // --- MANUEL YARIŞ EKLEME MOTORU ---
+    function manuelYarisModalAc() {
+        let bransSelect = document.getElementById('manBrans');
+        if(YARIS_PROGRAMI.length === 0) {
+            bransSelect.innerHTML = '<option value="">Önce Yarış Programı Yükleyin!</option>';
+        } else {
+            let branslar = [...new Set(YARIS_PROGRAMI.map(p => p.brans))];
+            bransSelect.innerHTML = branslar.map(b => `<option value="${b}">${b}</option>`).join('');
+        }
+        document.getElementById('manuelYarisModal').style.display = 'flex';
+    }
+    function manuelYarisModalKapat() { document.getElementById('manuelYarisModal').style.display = 'none'; }
+    
+    async function manuelYarisKaydet() {
+        const ad = document.getElementById('manAd').value.trim();
+        const yil = document.getElementById('manYil').value.trim();
+        const brans = document.getElementById('manBrans').value;
+        const derece = document.getElementById('manDerece').value.trim() || "NT";
+        
+        if(!ad || !yil || !brans) return alert("Lütfen Ad, Yıl ve Branş alanlarını doldurun.");
+        
+        try {
+            const res = await fetch(`${API_BASE}/gelecek_yaris/manuel_ekle`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ ad_soyad: ad, dogum_yili_iki_hane: yil, brans: brans, eski_derece: derece }) });
+            const data = await res.json();
+            if(res.ok && !data.hata) { alert("✅ " + data.mesaj); window.location.reload(); } else { alert("❌ Hata: " + (data.hata || "Bilinmeyen hata")); }
+        } catch(e) { alert("⚠️ Sunucu bağlantı hatası!"); }
+    }
+
     async function kesinKaydetTetikle() {
         let inputs = document.querySelectorAll('.final-sonuc-input');
         let bosVar = false;
@@ -588,12 +653,17 @@ Kurallar:
                 return;
             }
 
+            let beklenen = prompt("PDF'nin en altında yazan TOPLAM YARIŞ (Entry) sayısını girin:\n(Sistem eksik bulursa sizi uyaracaktır, zorunlu değildir boş geçmek için Tamam'a basabilirsiniz.)");
+
             document.getElementById('yuklemeBaslik').innerText = "PDF Okunuyor ve Eşleştiriliyor...";
             document.getElementById('yuklemeAciklama').innerText = "Lütfen bekleyin, tablo ayrıştırılıp Google Sheets'e yazılıyor.";
             document.getElementById('pdfYuklemeEkrani').style.display = 'flex';
             
             const formData = new FormData();
             formData.append("file", dosya);
+            if(beklenen && !isNaN(beklenen) && beklenen.trim() !== "") {
+                formData.append("beklenen_kayit", parseInt(beklenen));
+            }
             
             try {
                 const res = await fetch(`${API_BASE}/gelecek_yaris/pdf_yukle`, {
@@ -603,7 +673,11 @@ Kurallar:
                 const data = await res.json();
                 
                 if(res.ok && !data.hata) {
-                    alert("✅ " + data.mesaj);
+                    if(data.uyari) {
+                        alert(data.mesaj); // Dikkat uyarısı
+                    } else {
+                        alert("✅ " + data.mesaj);
+                    }
                     window.location.reload(); // Yükleme başarılıysa sayfayı yenile ve verileri getir
                 } else { 
                     // Sunucu kütüphane eksikliği vb. yapısal bir hata (detail) dönerse onu da yakala
